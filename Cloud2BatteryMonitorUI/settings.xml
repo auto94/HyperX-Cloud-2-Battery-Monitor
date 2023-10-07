@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<settings description="settings root">
+	<setting name="autostart">false</setting>
+	<setting name="colorHigh">-16776961</setting>
+	<setting name="colorHighText">-1</setting>
+	<setting name="colorMed">-8388480</setting>
+	<setting name="colorMedText">-1</setting>
+	<setting name="colorLow">-3801088 </setting>
+	<setting name="colorLowText">-1</setting>
+	<setting name="refreshMinutes">5</setting>
+</settings>
