@@ -8,15 +8,17 @@ The app consists of two forms/screens and a system tray icon.
 
 **Example battery icon:**
 
-![icon_example](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/c8fcfbb7-b139-4777-b9be-8ea3a4418277)
+![icon_example](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/9ee9dc07-c16e-4f36-9f9f-457e2af8634f)
 
 **Main screen:**
 
-![main_screen](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/21ac6c0f-cbca-4284-ab20-8e69f690042a)
+![main_screen](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/3546df9f-008a-416b-8d59-2f7526bdea86)
+
 
 **Settings screen:**
 
-![settings_form](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/23976e7d-edb6-4771-9882-d5ad81559041)
+![settings_form](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/bb00d0a5-60b1-4df8-9ab7-e94d2838325c)
+
 
 ## How to install
 
@@ -75,7 +77,7 @@ I only tested this on my own HyperX Cloud II Headset and Windows 10. It is a few
 ## License
 
 **MIT license.**
-See the file `LICENSE.md` for more information.
+See the file `LICENSE.txt` for more information.
 
 ## About
 
