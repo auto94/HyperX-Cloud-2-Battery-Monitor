@@ -87,7 +87,7 @@
     <Link>
       <AdditionalDependencies>hidapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)libs\hidapi-win\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\pugixml;$(SolutionDir)libs\hidapi-win\x64</AdditionalLibraryDirectories>
       <EntryPointSymbol>main</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
@@ -124,7 +124,7 @@ copy /Y "$(ProjectDir)settings.xml" "$(TargetDir)"</Command>
     </ClCompile>
     <Link>
       <AdditionalDependencies>hidapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)libs\hidapi-win\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\pugixml;$(SolutionDir)libs\hidapi-win\x64</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)libs\hidapi-win\x64\hidapi.dll" "$(TargetDir)"
@@ -142,8 +142,8 @@ copy /Y "$(ProjectDir)settings.xml" "$(TargetDir)"</Command>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\libs\pugixml\pugixml.cpp" />
     <ClCompile Include="MainForm.cpp" />
-    <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="SettingsForm.cpp" />
     <ClCompile Include="SettingsHelper.cpp" />
   </ItemGroup>
