@@ -22,7 +22,8 @@ The app consists of two forms/screens and a system tray icon.
 
 ## How to install
 
-I suggest you click and download the latest available release on the right side of this screen then start the exe.
+I suggest you click the latest available release on the right side of this screen and download Cloud2-Battery-Monitor_v1.zip. 
+Then extract the zip and run the file "Cloud2BatteryMonitorUI.exe" as administrator.
 
 No installation is necessary.
 
