@@ -1,4 +1,4 @@
-# HyperX Cloud II Headset Battery Monitor for Windows
+# HyperX Cloud II Headset Battery Monitor for Windows(x64)
 
 The aim of the project is simple, to create a somewhat customizable battery monitor for the Cloud II headset. The main feature of the app is a system tray icon displaying the current battery percentage.
 
