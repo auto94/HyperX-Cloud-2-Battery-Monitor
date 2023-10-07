@@ -125,6 +125,8 @@ copy /Y "$(ProjectDir)settings.xml" "$(TargetDir)"</Command>
     <Link>
       <AdditionalDependencies>hidapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)libs\pugixml;$(SolutionDir)libs\hidapi-win\x64</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>main</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)libs\hidapi-win\x64\hidapi.dll" "$(TargetDir)"
