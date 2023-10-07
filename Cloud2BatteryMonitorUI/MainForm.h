@@ -353,9 +353,9 @@ namespace Cloud2BatteryMonitorUI {
 
 	private: System::Void TrayIcon_DoubleClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
 		// Opens the application
-		this->MainForm_Load(sender, e);
 		Show();
 		this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
+		this->MainForm_Load(sender, e);
 	}
 
 	private: System::Void MainForm_Closing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
@@ -445,8 +445,9 @@ namespace Cloud2BatteryMonitorUI {
 	}
 
 	private: System::Void ItemOpen_Click(System::Object^ sender, System::EventArgs^ e) {
-		Show();
 		this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
+		Show();
+		this->MainForm_Load(sender, e);
 	}
 
 	private: System::Void MenuTitleSettings_Click(System::Object^ sender, System::EventArgs^ e) {
