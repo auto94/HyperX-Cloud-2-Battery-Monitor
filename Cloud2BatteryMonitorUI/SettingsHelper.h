@@ -8,7 +8,8 @@ static const char XML_NODE_SETTINGS[] = "settings";
 using namespace std;
 using namespace System::Drawing;
 
-class SettingsHelper {
+class SettingsHelper 
+{
 private:
     pugi::xml_document doc;
     pugi::xml_node settingsNode;

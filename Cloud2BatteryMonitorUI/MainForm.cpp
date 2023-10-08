@@ -17,18 +17,21 @@ void main()
  *
  * @return hid_device_info* of the device with the correct vendor/product ID and the highest usage page.
  */
-hid_device_info* getHeadsetDeviceInfo() {
+hid_device_info* getHeadsetDeviceInfo() 
+{
 	struct hid_device_info* devices = hid_enumerate((unsigned short)HEADSET_VENDOR_ID, (unsigned short)HEADSET_PRODUCT_ID);
 
 	// If no devices found, check for the newer vendor/product ID.
-	if (devices == NULL) {
+	if (devices == NULL) 
+	{
 		devices = hid_enumerate((unsigned short)HEADSET_VENDOR_ID_NEW, (unsigned short)HEADSET_PRODUCT_ID_NEW);
 	}
 
 	struct hid_device_info* deviceInfo{};
 
 	int highest_usage_page = 0; //I think the highest usage page device is the one that answers with battery level
-	for (struct hid_device_info* current = devices; current != nullptr; current = current->next) {
+	for (struct hid_device_info* current = devices; current != nullptr; current = current->next) 
+	{
 		if (current->usage_page >= highest_usage_page)
 		{
 			highest_usage_page = current->usage_page;
@@ -44,7 +47,8 @@ hid_device_info* getHeadsetDeviceInfo() {
  * @param hid_device* headset HID device.
  * @return value of 7th char in the buffer, as an int.
  */
-int getBatteryLevel (hid_device* headsetDevice) {
+int getBatteryLevel (hid_device* headsetDevice) 
+{
 	constexpr auto INPUT_BUFFER_SIZE = 160;
 
 	unsigned char buffer[INPUT_BUFFER_SIZE] = { 0 };

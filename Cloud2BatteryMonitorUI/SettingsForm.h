@@ -284,7 +284,8 @@ namespace Cloud2BatteryMonitorUI {
 		}
 #pragma endregion
 
-	private: System::Void SettingsForm_Load(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void SettingsForm_Load(System::Object^ sender, System::EventArgs^ e) 
+	{
 
 		SettingsHelper* settingsHelper = new SettingsHelper();
 		this->numRefreshMinutes->Value = settingsHelper->getRefreshMinutes();
@@ -299,7 +300,8 @@ namespace Cloud2BatteryMonitorUI {
 		delete settingsHelper;
 	}
 
-	private: System::Void colorBtnClick(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void colorBtnClick(System::Object^ sender, System::EventArgs^ e) 
+	{
 		ColorDialog^ colorDlg = gcnew ColorDialog();
 		colorDlg->AllowFullOpen = true;
 		colorDlg->AnyColor = true;
@@ -313,7 +315,8 @@ namespace Cloud2BatteryMonitorUI {
 		}
 	}
 
-	private: System::Void btnSaveSettings_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void btnSaveSettings_Click(System::Object^ sender, System::EventArgs^ e) 
+	{
 		SettingsHelper* settingsHelper = new SettingsHelper();
 		settingsHelper->setRefreshMinutes((int)this->numRefreshMinutes->Value);
 		settingsHelper->setColorHigh(this->btnHigh->BackColor);
@@ -325,6 +328,8 @@ namespace Cloud2BatteryMonitorUI {
 		settingsHelper->setAutostart(this->cbStart->Checked);
 
 		settingsHelper->saveSettings();
+
+		this->DialogResult = System::Windows::Forms::DialogResult::OK;
 
 		delete settingsHelper;
 
