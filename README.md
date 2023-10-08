@@ -23,7 +23,7 @@ The app consists of two forms/screens and a system tray icon.
 ## How to install
 
 I suggest you click the latest available release on the right side of this screen and download Cloud2-Battery-Monitor_v1.zip. 
-Then extract the zip and run the file "Cloud2BatteryMonitorUI.exe" as administrator.
+Then extract the zip and run the file "Cloud2BatteryMonitorUI.exe".
 
 No installation is necessary.
 
@@ -40,7 +40,7 @@ No installation is necessary.
 | colorLowText| -1 (white)| int (int of color argb) | System tray icon text (0-19%) battery
 | refreshMinutes| 5| positive int | System tray icon refresh timer length
 
-If you accidentally delete the settings file then just download the one in this repository and place it in the folder which contains your exe.
+If you accidentally delete the settings file then just download the one in this repository ([settings.xml](Cloud2BatteryMonitorUI/settings.xml)) and place it in the folder which contains your exe.
 
 ## FAQ
 
@@ -78,7 +78,7 @@ I only tested this on my own HyperX Cloud II Headset and Windows 10. It is a few
 ## License
 
 **MIT license.**
-See the file `LICENSE.txt` for more information.
+See the file [LICENSE.txt](LICENSE.txt) for more information.
 
 ## About
 
