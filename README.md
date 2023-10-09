@@ -46,7 +46,7 @@ If you accidentally delete the settings file then just download the one in this 
 
 **Q: The app won't automatically start at boot.**
 
-A: Try running the exe as Administrator.
+A: Try running the exe as Administrator and make sure the exe is located at the same location as it was when you enabled auto start in the options.
 
 **Q: Why did you choose this language/framework?**
 
