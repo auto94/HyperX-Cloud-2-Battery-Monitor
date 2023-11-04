@@ -14,8 +14,6 @@ constexpr auto HEADSET_PRODUCT_ID_NEW = 395;
 hid_device_info* getHeadsetDeviceInfo();
 int getBatteryLevel(hid_device*);
 
-bool isTimerSet = false;
-
 
 namespace Cloud2BatteryMonitorUI {
 
@@ -32,6 +30,7 @@ namespace Cloud2BatteryMonitorUI {
 	public ref class MainForm : public System::Windows::Forms::Form
 	{
 	public:
+		System::Windows::Forms::Timer^ timerRefresh = gcnew System::Windows::Forms::Timer();
 		MainForm(void)
 		{
 			InitializeComponent();
@@ -59,13 +58,18 @@ namespace Cloud2BatteryMonitorUI {
 	private: System::Windows::Forms::NotifyIcon^ iconSystemTray;
 	private: System::Windows::Forms::Button^ btnRefresh;
 	private: System::Windows::Forms::ContextMenuStrip^ contextMenuNotifyIcon;
-	private: System::Windows::Forms::ToolStripMenuItem^ itemSettings;
 
-	private: System::Windows::Forms::ToolStripMenuItem^ itemExit;
+
+
 	private: System::Windows::Forms::MenuStrip^ menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^ menuTitleSettings;
 	private: System::Windows::Forms::ToolStripMenuItem^ menuTitleAbout;
 	private: System::Windows::Forms::ToolStripMenuItem^ itemOpen;
+	private: System::Windows::Forms::ToolStripMenuItem^ itemSettings;
+	private: System::Windows::Forms::ToolStripMenuItem^ itemRefresh;
+	private: System::Windows::Forms::ToolStripMenuItem^ itemExit;
+
+
 
 	private: System::ComponentModel::IContainer^ components;
 	protected:
@@ -90,13 +94,14 @@ namespace Cloud2BatteryMonitorUI {
 			this->lbHeadsetInfoProd = (gcnew System::Windows::Forms::Label());
 			this->iconSystemTray = (gcnew System::Windows::Forms::NotifyIcon(this->components));
 			this->contextMenuNotifyIcon = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
-			this->itemSettings = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->itemExit = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->btnRefresh = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->menuTitleSettings = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->menuTitleAbout = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->itemRefresh = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->itemSettings = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->itemOpen = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->itemExit = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->contextMenuNotifyIcon->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -158,27 +163,12 @@ namespace Cloud2BatteryMonitorUI {
 			// 
 			// contextMenuNotifyIcon
 			// 
-			this->contextMenuNotifyIcon->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
+			this->contextMenuNotifyIcon->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
 				this->itemOpen,
-				this->itemSettings, 
-				this->itemExit
+					this->itemSettings, this->itemRefresh, this->itemExit
 			});
 			this->contextMenuNotifyIcon->Name = L"contextMenuStrip1";
-			this->contextMenuNotifyIcon->Size = System::Drawing::Size(181, 92);
-			// 
-			// itemSettings
-			// 
-			this->itemSettings->Name = L"itemSettings";
-			this->itemSettings->Size = System::Drawing::Size(180, 22);
-			this->itemSettings->Text = L"Settings";
-			this->itemSettings->Click += gcnew System::EventHandler(this, &MainForm::ItemSettings_Click);
-			// 
-			// itemExit
-			// 
-			this->itemExit->Name = L"itemExit";
-			this->itemExit->Size = System::Drawing::Size(180, 22);
-			this->itemExit->Text = L"Exit";
-			this->itemExit->Click += gcnew System::EventHandler(this, &MainForm::ItemExit_Click);
+			this->contextMenuNotifyIcon->Size = System::Drawing::Size(181, 114);
 			// 
 			// btnRefresh
 			// 
@@ -217,7 +207,7 @@ namespace Cloud2BatteryMonitorUI {
 			this->menuTitleSettings->Name = L"menuTitleSettings";
 			this->menuTitleSettings->Size = System::Drawing::Size(61, 20);
 			this->menuTitleSettings->Text = L"Settings";
-			this->menuTitleSettings->Click += gcnew System::EventHandler(this, &MainForm::MenuTitleSettings_Click);
+			this->menuTitleSettings->Click += gcnew System::EventHandler(this, &MainForm::Settings_Click);
 			// 
 			// menuTitleAbout
 			// 
@@ -227,12 +217,33 @@ namespace Cloud2BatteryMonitorUI {
 			this->menuTitleAbout->Text = L"About";
 			this->menuTitleAbout->Click += gcnew System::EventHandler(this, &MainForm::MenuTitleAbout_Click);
 			// 
+			// itemRefresh
+			// 
+			this->itemRefresh->Name = L"itemRefresh";
+			this->itemRefresh->Size = System::Drawing::Size(180, 22);
+			this->itemRefresh->Text = L"Refresh";
+			this->itemRefresh->Click += gcnew System::EventHandler(this, &MainForm::BtnRefresh_Click);
+			// 
+			// itemSettings
+			// 
+			this->itemSettings->Name = L"itemSettings";
+			this->itemSettings->Size = System::Drawing::Size(180, 22);
+			this->itemSettings->Text = L"Settings";
+			this->itemSettings->Click += gcnew System::EventHandler(this, &MainForm::Settings_Click);
+			// 
 			// itemOpen
 			// 
 			this->itemOpen->Name = L"itemOpen";
 			this->itemOpen->Size = System::Drawing::Size(180, 22);
 			this->itemOpen->Text = L"Open";
 			this->itemOpen->Click += gcnew System::EventHandler(this, &MainForm::ItemOpen_Click);
+			// 
+			// itemExit
+			// 
+			this->itemExit->Name = L"itemExit";
+			this->itemExit->Size = System::Drawing::Size(180, 22);
+			this->itemExit->Text = L"Exit";
+			this->itemExit->Click += gcnew System::EventHandler(this, &MainForm::ItemExit_Click);
 			// 
 			// MainForm
 			// 
@@ -265,18 +276,21 @@ namespace Cloud2BatteryMonitorUI {
 		}
 #pragma endregion
 
-	private: System::Void MainForm_Load(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void MainForm_Load(System::Object^ sender, System::EventArgs^ e) 
+	{
 		struct hid_device_info* cloud2DeviceInfo = getHeadsetDeviceInfo();
 
 		if (cloud2DeviceInfo != NULL)
 		{
 			hid_device* headsetDevice = hid_open_path(cloud2DeviceInfo->path);
 
-			if (headsetDevice != NULL) {
+			if (headsetDevice != NULL) 
+			{
 				int batteryLevel = getBatteryLevel(headsetDevice);
 
 				// If the app is minized, only refresh the icon.
-				if (this->WindowState != FormWindowState::Minimized) {
+				if (this->WindowState != FormWindowState::Minimized) 
+				{
 					wchar_t manufacturer[20];
 					hid_get_manufacturer_string(headsetDevice, manufacturer, 20);
 					wchar_t productName[50];
@@ -308,7 +322,8 @@ namespace Cloud2BatteryMonitorUI {
 				System::String^ batStr2 = gcnew System::String(to_string(batteryLevel).c_str());
 				RefreshTrayIcon(batStr2);
 			}
-			else {
+			else 
+			{
 				this->iconSystemTray->Text = "Battery level N/A";
 				this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
 				this->lbStatus->Text = "Could not connect to headset.";
@@ -317,41 +332,39 @@ namespace Cloud2BatteryMonitorUI {
 
 			hid_close(headsetDevice);
 		}
-		else {
+		else 
+		{
 			this->iconSystemTray->Text = "Battery level N/A";
 			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
 			this->lbStatus->Text = "No headset device detected.";
 			this->btnRefresh->Visible = true;
 		}
 
-		if (isTimerSet == false) {
+		if (timerRefresh->Enabled == false) 
+		{
 			// Prep and start the refresh timer.
-			SettingsHelper* settingsHelper = new SettingsHelper();
-			System::Windows::Forms::Timer^ timerRefresh = gcnew System::Windows::Forms::Timer();
-			timerRefresh->Interval = (60 * 1000 * settingsHelper->getRefreshMinutes());
-			timerRefresh->Tick += gcnew EventHandler(this, &MainForm::MainForm_Load);
-			timerRefresh->Start();
-
-			delete settingsHelper;
+			setupTimer();
 
 			MainForm::FormClosing += gcnew FormClosingEventHandler(this, &MainForm::MainForm_Closing);
-			isTimerSet = true;
 		}
 	}
 
 	private: System::Void Form_Shown(System::Object^ sender, System::EventArgs^ e)
 	{
 		System::Array^ args = Environment::GetCommandLineArgs();
-		if (args->Length > 1) {
+		if (args->Length > 1) 
+		{
 			// For application silent start (auto start)
-			if (String::Equals(args->GetValue(1), "-hidden")) {
-			this->WindowState = FormWindowState::Minimized;
-			this->Hide();
+			if (String::Equals(args->GetValue(1), "-hidden")) 
+			{
+				this->WindowState = FormWindowState::Minimized;
+				this->Hide();
 			}
 		}
 	}
 
-	private: System::Void TrayIcon_DoubleClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	private: System::Void TrayIcon_DoubleClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
+	{
 		// Opens the application
 		Show();
 		this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
@@ -376,13 +389,16 @@ namespace Cloud2BatteryMonitorUI {
 	{
 		int battLvl = System::Int32::Parse(batteryLevel);
 		System::Drawing::Font^ iconFont;
-		if (battLvl == 100) {
+		if (battLvl == 100) 
+		{
 			iconFont = gcnew System::Drawing::Font("Tahoma", 8, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
 		}
-		else if (battLvl < 10) {
+		else if (battLvl < 10) 
+		{
 			iconFont = gcnew System::Drawing::Font("Tahoma", 13, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
 		}
-		else {
+		else 
+		{
 			iconFont = gcnew System::Drawing::Font("Tahoma", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
 		}
 
@@ -394,15 +410,18 @@ namespace Cloud2BatteryMonitorUI {
 		System::IntPtr ptrIcon;
 		SettingsHelper* settingsHelper = new SettingsHelper();
 
-		if (battLvl > 49) {
+		if (battLvl > 49) 
+		{
 			iconBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorHighText());
 			iconGraphics->Clear(settingsHelper->getColorHigh());
 		}
-		else if (battLvl > 19) {
+		else if (battLvl > 19) 
+		{
 			iconBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorMedText());
 			iconGraphics->Clear(settingsHelper->getColorMed());
 		}
-		else {
+		else 
+		{
 			iconBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorLowText());
 			iconGraphics->Clear(settingsHelper->getColorLow());
 		}
@@ -411,11 +430,13 @@ namespace Cloud2BatteryMonitorUI {
 		iconGraphics->DrawString(batteryLevel, iconFont, iconBrush, 0, 0);
 
 		ptrIcon = (textBitmap->GetHicon());
-		if (battLvl > 0) {
+		if (battLvl > 0) 
+		{
 			this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(ptrIcon);
 			this->iconSystemTray->Text = "Battery level: " + batteryLevel + " %";
 		}
-		else {
+		else 
+		{
 			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
 			this->iconSystemTray->Text = "Battery level N/A";
 		}
@@ -427,38 +448,57 @@ namespace Cloud2BatteryMonitorUI {
 		delete settingsHelper;
 	}
 
-	private: System::Void BtnRefresh_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void BtnRefresh_Click(System::Object^ sender, System::EventArgs^ e) 
+	{
 		//Refresh UI/Search for headset
 		MainForm_Load(sender, e);
 	}
 
-	private: System::Void ItemExit_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void ItemExit_Click(System::Object^ sender, System::EventArgs^ e) 
+	{
 		this->iconSystemTray->Visible = false;
 		System::Environment::Exit(1);
 	}
 
-	private: System::Void ItemSettings_Click(System::Object^ sender, System::EventArgs^ e) {
-		SettingsForm^ SettingsForm1 = gcnew SettingsForm();
-		SettingsForm1->ShowDialog();
-		delete SettingsForm1;
-		MainForm_Load(gcnew System::Object(), gcnew System::EventArgs());
-	}
-
-	private: System::Void ItemOpen_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void ItemOpen_Click(System::Object^ sender, System::EventArgs^ e) 
+	{
 		this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
 		Show();
 		this->MainForm_Load(sender, e);
 	}
 
-	private: System::Void MenuTitleSettings_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void Settings_Click(System::Object^ sender, System::EventArgs^ e) 
+	{
 		SettingsForm^ SettingsForm1 = gcnew SettingsForm();
-		SettingsForm1->ShowDialog();
-		delete SettingsForm1;
-		MainForm_Load(gcnew System::Object(), gcnew System::EventArgs());
+		System::Windows::Forms::DialogResult result = SettingsForm1->ShowDialog();
+		delete SettingsForm1; 
+		if (result == System::Windows::Forms::DialogResult::OK) 
+		{
+			MainForm_Load(gcnew System::Object(), gcnew System::EventArgs());
+			setupTimer();
+		}
 	}
 
-	private: System::Void MenuTitleAbout_Click(System::Object^ sendar, System::EventArgs^ e) {
+	private: System::Void MenuTitleAbout_Click(System::Object^ sendar, System::EventArgs^ e) 
+	{
 		system("start https://github.com/auto94/Cloud2-Battery-Monitor");
+	}
+
+	private: void setupTimer() 
+	{
+		SettingsHelper* settingsHelper = new SettingsHelper();
+		if (timerRefresh->Enabled == true) 
+		{
+			timerRefresh->Stop();
+		}
+		else 
+		{
+			timerRefresh->Tick += gcnew EventHandler(this, &MainForm::MainForm_Load);
+		}
+		timerRefresh->Interval = (60 * 1000 * settingsHelper->getRefreshMinutes());
+		timerRefresh->Start();
+
+		delete settingsHelper;
 	}
 };
 }
