@@ -71,6 +71,14 @@ namespace Cloud2BatteryMonitorUI {
 
 
 
+
+
+
+
+
+
+
+
 	private: System::ComponentModel::IContainer^ components;
 	protected:
 	private:
@@ -168,7 +176,8 @@ namespace Cloud2BatteryMonitorUI {
 					this->itemSettings, this->itemRefresh, this->itemExit
 			});
 			this->contextMenuNotifyIcon->Name = L"contextMenuStrip1";
-			this->contextMenuNotifyIcon->Size = System::Drawing::Size(181, 114);
+			this->contextMenuNotifyIcon->ShowImageMargin = false;
+			this->contextMenuNotifyIcon->Size = System::Drawing::Size(156, 114);
 			// 
 			// btnRefresh
 			// 
@@ -220,28 +229,28 @@ namespace Cloud2BatteryMonitorUI {
 			// itemRefresh
 			// 
 			this->itemRefresh->Name = L"itemRefresh";
-			this->itemRefresh->Size = System::Drawing::Size(180, 22);
+			this->itemRefresh->Size = System::Drawing::Size(155, 22);
 			this->itemRefresh->Text = L"Refresh";
 			this->itemRefresh->Click += gcnew System::EventHandler(this, &MainForm::BtnRefresh_Click);
 			// 
 			// itemSettings
 			// 
 			this->itemSettings->Name = L"itemSettings";
-			this->itemSettings->Size = System::Drawing::Size(180, 22);
+			this->itemSettings->Size = System::Drawing::Size(155, 22);
 			this->itemSettings->Text = L"Settings";
 			this->itemSettings->Click += gcnew System::EventHandler(this, &MainForm::Settings_Click);
 			// 
 			// itemOpen
 			// 
 			this->itemOpen->Name = L"itemOpen";
-			this->itemOpen->Size = System::Drawing::Size(180, 22);
+			this->itemOpen->Size = System::Drawing::Size(155, 22);
 			this->itemOpen->Text = L"Open";
 			this->itemOpen->Click += gcnew System::EventHandler(this, &MainForm::ItemOpen_Click);
 			// 
 			// itemExit
 			// 
 			this->itemExit->Name = L"itemExit";
-			this->itemExit->Size = System::Drawing::Size(180, 22);
+			this->itemExit->Size = System::Drawing::Size(155, 22);
 			this->itemExit->Text = L"Exit";
 			this->itemExit->Click += gcnew System::EventHandler(this, &MainForm::ItemExit_Click);
 			// 
