@@ -47,35 +47,61 @@ hid_device_info* getHeadsetDeviceInfo()
  * @param hid_device* headset HID device.
  * @return value of 7th char in the buffer, as an int.
  */
-int getBatteryLevel (hid_device* headsetDevice) 
+int getBatteryLevel(hid_device* headsetDevice) 
 {
-	constexpr auto INPUT_BUFFER_SIZE = 160;
-
-	unsigned char buffer[INPUT_BUFFER_SIZE] = { 0 };
-	buffer[0] = 6; // Set the first value to the number of the report
-
-	int ret1 = hid_get_input_report(headsetDevice, buffer, INPUT_BUFFER_SIZE);
+	wchar_t manufacturer[20];
+	hid_get_manufacturer_string(headsetDevice, manufacturer, 20);
 
 	constexpr auto WRITE_BUFFER_SIZE = 20;
-	unsigned char writeBuffer[WRITE_BUFFER_SIZE] = { 0 };
-	writeBuffer[0] = 0x06;
-	writeBuffer[2] = 0x02;
-	writeBuffer[4] = 0x9a;
-	writeBuffer[7] = 0x68;
-	writeBuffer[8] = 0x4a;
-	writeBuffer[9] = 0x8e;
-	writeBuffer[10] = 0x0a;
-	writeBuffer[14] = 0xbb;
-	writeBuffer[15] = 0x02;
 
-	hid_write(headsetDevice, writeBuffer, WRITE_BUFFER_SIZE);
+	if (wcsstr(manufacturer, L"HP") != 0) 
+	{
+		unsigned char writeBuffer[WRITE_BUFFER_SIZE] = { 0 };
+		writeBuffer[0] = 0x06;
+		writeBuffer[1] = 0xff;
+		writeBuffer[2] = 0xbb;
+		writeBuffer[3] = 0x02;
 
-	constexpr auto DATA_BUFFER_SIZE = 12;
-	unsigned char dataBuffer[DATA_BUFFER_SIZE] = { 0 };
-	unsigned char dataBufferCmp[DATA_BUFFER_SIZE] = { 0 };
+		hid_write(headsetDevice, writeBuffer, WRITE_BUFFER_SIZE);
 
-	hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
+		constexpr auto DATA_BUFFER_SIZE = 19;
+		unsigned char dataBuffer[DATA_BUFFER_SIZE] = { 0 };
 
-	return dataBuffer[7];
+		hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
+
+		return dataBuffer[7];
+	}
+	else 
+	{
+		constexpr auto INPUT_BUFFER_SIZE = 160;
+
+		unsigned char buffer[INPUT_BUFFER_SIZE] = { 0 };
+		buffer[0] = 6; // Set the first value to the number of the report
+
+		int ret1 = hid_get_input_report(headsetDevice, buffer, INPUT_BUFFER_SIZE);
+
+		unsigned char writeBuffer[WRITE_BUFFER_SIZE] = { 0 };
+		writeBuffer[0] = 0x06;
+		writeBuffer[2] = 0x02;
+		writeBuffer[4] = 0x9a;
+		writeBuffer[7] = 0x68;
+		writeBuffer[8] = 0x4a;
+		writeBuffer[9] = 0x8e;
+		writeBuffer[10] = 0x0a;
+		writeBuffer[14] = 0xbb;
+		writeBuffer[15] = 0x02;
+
+		hid_write(headsetDevice, writeBuffer, WRITE_BUFFER_SIZE);
+
+		constexpr auto DATA_BUFFER_SIZE = 12;
+		unsigned char dataBuffer[DATA_BUFFER_SIZE] = { 0 };
+
+		hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
+
+		return dataBuffer[7];
+
+	}
+	
+	return 0;
 }
 
