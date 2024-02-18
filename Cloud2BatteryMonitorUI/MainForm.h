@@ -5,11 +5,15 @@
 #include <stdlib.h>
 #include "SettingsForm.h"
 
-constexpr auto HEADSET_VENDOR_ID = 2385;
-constexpr auto HEADSET_PRODUCT_ID = 5912;
-constexpr auto HEADSET_USAGE_PAGE = 65299;
-constexpr auto HEADSET_VENDOR_ID_NEW = 1008;
-constexpr auto HEADSET_PRODUCT_ID_NEW = 395;
+constexpr auto HEADSET_VENDOR_ID_KINGSTON = 2385;
+constexpr auto HEADSET_VENDOR_ID_HP = 1008;
+
+constexpr auto HEADSET_PRODUCT_ID_KINGSTON_CLOUD_II = 5912;
+constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_II = 395;
+constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_II_CORE = 2453;
+
+const int VENDORS_ARRAY[] = { HEADSET_VENDOR_ID_KINGSTON, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP };
+const int PRODUCTS_ARRAY[] = { HEADSET_PRODUCT_ID_KINGSTON_CLOUD_II, HEADSET_PRODUCT_ID_HP_CLOUD_II, HEADSET_PRODUCT_ID_HP_CLOUD_II_CORE};
 
 hid_device_info* getHeadsetDeviceInfo();
 int getBatteryLevel(hid_device*);

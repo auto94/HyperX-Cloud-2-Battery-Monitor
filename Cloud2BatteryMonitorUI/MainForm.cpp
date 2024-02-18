@@ -19,12 +19,16 @@ void main()
  */
 hid_device_info* getHeadsetDeviceInfo() 
 {
-	struct hid_device_info* devices = hid_enumerate((unsigned short)HEADSET_VENDOR_ID, (unsigned short)HEADSET_PRODUCT_ID);
+	struct hid_device_info* devices = NULL;
+	
+	int id_index = 0;
+	int num_supported_devices = sizeof(VENDORS_ARRAY) / sizeof(VENDORS_ARRAY[0]);
 
-	// If no devices found, check for the newer vendor/product ID.
-	if (devices == NULL) 
-	{
-		devices = hid_enumerate((unsigned short)HEADSET_VENDOR_ID_NEW, (unsigned short)HEADSET_PRODUCT_ID_NEW);
+	// Loop through the supported device vendor and product IDs until we find a device.
+	while (devices == NULL && id_index < num_supported_devices) {
+		devices = hid_enumerate((unsigned short)VENDORS_ARRAY[id_index], (unsigned short)PRODUCTS_ARRAY[id_index]);
+
+		id_index++;
 	}
 
 	struct hid_device_info* deviceInfo{};
@@ -51,28 +55,37 @@ int getBatteryLevel(hid_device* headsetDevice)
 {
 	wchar_t manufacturer[20];
 	hid_get_manufacturer_string(headsetDevice, manufacturer, 20);
+	wchar_t productName[50];
+	hid_get_product_string(headsetDevice, productName, 50);
 
 	constexpr auto WRITE_BUFFER_SIZE = 20;
+	constexpr auto DATA_BUFFER_SIZE = 20;
+	
+	unsigned char writeBuffer[WRITE_BUFFER_SIZE] = { 0 };
+	// Data buffer is max 20 bytes for the currently supported headsets.
 
-	if (wcsstr(manufacturer, L"HP") != 0) 
+	int batteryByteInt = 7;
+
+	if (wcsstr(manufacturer, L"HP") != 0)
 	{
-		unsigned char writeBuffer[WRITE_BUFFER_SIZE] = { 0 };
-		writeBuffer[0] = 0x06;
-		writeBuffer[1] = 0xff;
-		writeBuffer[2] = 0xbb;
-		writeBuffer[3] = 0x02;
+		if (wcsstr(productName, L"Cloud II Core") != 0) {
+			// HP Cloud II Core Wireless data
+			writeBuffer[0] = 0x66;
+			writeBuffer[1] = 0x89;
 
-		hid_write(headsetDevice, writeBuffer, WRITE_BUFFER_SIZE);
-
-		constexpr auto DATA_BUFFER_SIZE = 19;
-		unsigned char dataBuffer[DATA_BUFFER_SIZE] = { 0 };
-
-		hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
-
-		return dataBuffer[7];
+			batteryByteInt = 4;
+		}
+		else if (wcsstr(productName, L"Cloud II Wireless") != 0) {
+			// HP Cloud II Wireless data
+			writeBuffer[0] = 0x06;
+			writeBuffer[1] = 0xff;
+			writeBuffer[2] = 0xbb;
+			writeBuffer[3] = 0x02;
+		}
 	}
 	else 
 	{
+		// Kingston Cloud II supported but it requires some input report checking before writes.
 		constexpr auto INPUT_BUFFER_SIZE = 160;
 
 		unsigned char buffer[INPUT_BUFFER_SIZE] = { 0 };
@@ -80,7 +93,7 @@ int getBatteryLevel(hid_device* headsetDevice)
 
 		int ret1 = hid_get_input_report(headsetDevice, buffer, INPUT_BUFFER_SIZE);
 
-		unsigned char writeBuffer[WRITE_BUFFER_SIZE] = { 0 };
+		// Kingston Cloud II Wireless data
 		writeBuffer[0] = 0x06;
 		writeBuffer[2] = 0x02;
 		writeBuffer[4] = 0x9a;
@@ -90,18 +103,14 @@ int getBatteryLevel(hid_device* headsetDevice)
 		writeBuffer[10] = 0x0a;
 		writeBuffer[14] = 0xbb;
 		writeBuffer[15] = 0x02;
-
-		hid_write(headsetDevice, writeBuffer, WRITE_BUFFER_SIZE);
-
-		constexpr auto DATA_BUFFER_SIZE = 12;
-		unsigned char dataBuffer[DATA_BUFFER_SIZE] = { 0 };
-
-		hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
-
-		return dataBuffer[7];
-
 	}
-	
-	return 0;
+
+	hid_write(headsetDevice, writeBuffer, WRITE_BUFFER_SIZE);
+
+	unsigned char dataBuffer[DATA_BUFFER_SIZE] = { 0 };
+
+	hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
+
+	return dataBuffer[batteryByteInt];
 }
 
