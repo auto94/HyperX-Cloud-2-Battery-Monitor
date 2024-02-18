@@ -58,7 +58,7 @@ int getBatteryLevel(hid_device* headsetDevice)
 	wchar_t productName[50];
 	hid_get_product_string(headsetDevice, productName, 50);
 
-	constexpr auto WRITE_BUFFER_SIZE = 20;
+	constexpr auto WRITE_BUFFER_SIZE = 52;
 	constexpr auto DATA_BUFFER_SIZE = 20;
 	
 	unsigned char writeBuffer[WRITE_BUFFER_SIZE] = { 0 };
@@ -105,11 +105,22 @@ int getBatteryLevel(hid_device* headsetDevice)
 		writeBuffer[15] = 0x02;
 	}
 
-	hid_write(headsetDevice, writeBuffer, WRITE_BUFFER_SIZE);
+	int ret = hid_write(headsetDevice, writeBuffer, WRITE_BUFFER_SIZE);
 
 	unsigned char dataBuffer[DATA_BUFFER_SIZE] = { 0 };
 
-	hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
+	// HP Cloud II Wireless might need extra reads.
+	if (wcsstr(manufacturer, L"HP") != 0 && wcsstr(productName, L"Cloud II Wireless") != 0) {
+		constexpr auto MAX_READS = 5;
+		int curRead = 0;
+		while (dataBuffer[3] != writeBuffer[3] && curRead < MAX_READS) {
+			hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
+			curRead++;
+		}
+	}
+	else {
+		hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
+	}
 
 	return dataBuffer[batteryByteInt];
 }
