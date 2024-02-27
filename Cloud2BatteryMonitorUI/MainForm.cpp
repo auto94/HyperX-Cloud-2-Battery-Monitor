@@ -13,9 +13,9 @@ void main()
 }
 
 /**
- * Enumerates HID devices and returns the HID device info with the highest usage page
+ * Enumerates HID devices and returns the HID device info with the highest usage
  *
- * @return hid_device_info* of the device with the correct vendor/product ID and the highest usage page.
+ * @return hid_device_info* of the device with the correct vendor/product ID and the highest usage.
  */
 hid_device_info* getHeadsetDeviceInfo() 
 {
@@ -33,10 +33,17 @@ hid_device_info* getHeadsetDeviceInfo()
 
 	struct hid_device_info* deviceInfo{};
 
-	int highest_usage_page = 0; //I think the highest usage page device is the one that answers with battery level
+	int highest_usage = 0; //I think the highest usage device is the one that answers with battery level
+	int highest_usage_page = 0; //If all devices have the same usage, use the one with the highest usage page
 	for (struct hid_device_info* current = devices; current != nullptr; current = current->next) 
 	{
-		if (current->usage_page >= highest_usage_page)
+		if (current->usage > highest_usage)
+		{
+			highest_usage = current->usage;
+			highest_usage_page = current->usage_page;
+			deviceInfo = current;
+		}
+		else if (current->usage == highest_usage && current->usage_page >= highest_usage_page)
 		{
 			highest_usage_page = current->usage_page;
 			deviceInfo = current;
@@ -109,18 +116,7 @@ int getBatteryLevel(hid_device* headsetDevice)
 
 	unsigned char dataBuffer[DATA_BUFFER_SIZE] = { 0 };
 
-	// HP Cloud II Wireless might need extra reads.
-	if (wcsstr(manufacturer, L"HP") != 0 && wcsstr(productName, L"Cloud II Wireless") != 0) {
-		constexpr auto MAX_READS = 5;
-		int curRead = 0;
-		while (dataBuffer[3] != writeBuffer[3] && curRead < MAX_READS) {
-			hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
-			curRead++;
-		}
-	}
-	else {
-		hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
-	}
+	hid_read_timeout(headsetDevice, dataBuffer, DATA_BUFFER_SIZE, 1000);
 
 	return dataBuffer[batteryByteInt];
 }
