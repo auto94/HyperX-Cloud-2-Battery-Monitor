@@ -1,6 +1,21 @@
+
 # HyperX Cloud II Wireless Headset Battery Monitor for Windows(x64)
 
 The aim of the project is simple, to create a somewhat customizable battery monitor for the Cloud II wireless headset. The main feature of the app is a system tray icon displaying the current battery percentage.
+
+## Supported headsets
+
+**Kingston HyperX Cloud II Wireless**
+**HP HyperX Cloud II Wireless**
+**HP HyperX Cloud II Core Wireless**
+
+If you would like a different Cloud Wireless headset supported, feel free to create an issue here on Github but beware that I will ask you for assistance (eg. Wireshark USB traffic recordings).
+
+## How to install
+
+You can download [release v1.4 here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.4/Cloud2BatteryMonitor_v1.4.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
+
+No installation is necessary.
 
 ## About the app
 
@@ -18,14 +33,6 @@ The app consists of two forms/screens and a system tray icon.
 **Settings screen:**
 
 ![settings_form](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/bb00d0a5-60b1-4df8-9ab7-e94d2838325c)
-
-
-## How to install
-
-I suggest you click the latest available release on the right side of this screen and download Cloud2-Battery-Monitor_v1.zip. 
-Then extract the zip and run the file "Cloud2BatteryMonitorUI.exe".
-
-No installation is necessary.
 
 ## Default settings
 
@@ -53,21 +60,17 @@ A: Try running the exe as Administrator and make sure the exe is located at the 
 A: I am mostly familiar with Java/Python but I wanted to try something new and since this was always a Windows-only project, I just downloaded Visual Studio Community 2022, installed all the add-ons and chose a random template. 
 The end result is this frankensteinian mess of C# and C++ and while it is a bit wonky, it works and I had fun making it. 
 
-**Q: Why did you do it this way or that way?**
-
-I don't know man, this is literally the first thing I've made in either C++ or C#, I don't know anything about either.
-
-**Q: Why doesn't the app also do X and Y?**
-
-A: I didn't think it needed anything else. If you do, feel free to either add it yourself or open an issue with a feature request. If I agree with the request, I'll try to find the time and implement it.
-
 **Q: How did you do it?**
 
 A: Basically I used wireshark to find the data and responses which had the battery level in it and then just reproduced them using HID API. I'll add a longer tutorial/walkthrough at some point in the future.
 
 ## Tested on
+|Manufacturer| Product name | Release(s)| OS(s)|
+|--|--|--|--|
+| Kingston | HyperX Cloud II Wireless| v1.0-1.4 | Windows 10
+| HP | HyperX Cloud II Wireless | v1.4 | Windows 10, Windows 11
+| HP | HyperX Cloud II Core Wireless | v1.4 | Windows 10
 
-I only tested this on my own HyperX Cloud II Headset and Windows 10. It is a few years old and so it still uses the old Kingston vendor ID. 
 
 ## Special thanks
 
