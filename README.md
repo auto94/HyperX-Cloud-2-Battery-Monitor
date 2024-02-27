@@ -6,7 +6,9 @@ The aim of the project is simple, to create a somewhat customizable battery moni
 ## Supported headsets
 
 **Kingston HyperX Cloud II Wireless**
+
 **HP HyperX Cloud II Wireless**
+
 **HP HyperX Cloud II Core Wireless**
 
 If you would like a different Cloud Wireless headset supported, feel free to create an issue here on Github but beware that I will ask you for assistance (eg. Wireshark USB traffic recordings).
