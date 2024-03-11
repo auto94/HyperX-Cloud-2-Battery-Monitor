@@ -89,6 +89,14 @@ int getBatteryLevel(hid_device* headsetDevice)
 			writeBuffer[2] = 0xbb;
 			writeBuffer[3] = 0x02;
 		}
+		else if (wcsstr(productName, L"Cloud Alpha Wireless") != 0) {
+			// HP Cloud Alpha Wireless data
+			writeBuffer[0] = 0x21;
+			writeBuffer[1] = 0xbb;
+			writeBuffer[2] = 0x0b;
+
+			batteryByteInt = 3;
+		}
 	}
 	else 
 	{
