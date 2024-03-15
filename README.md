@@ -17,7 +17,7 @@ If you would like a different Cloud Wireless headset supported, feel free to cre
 
 ## How to install
 
-You can download [release v1.4 here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.4/Cloud2BatteryMonitor_v1.4.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
+You can download [release v1.5 here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.5/Cloud2BatteryMonitor_v1.5.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
 
 No installation is necessary.
 
@@ -71,9 +71,10 @@ A: Basically I used wireshark to find the data and responses which had the batte
 ## Tested on
 |Manufacturer| Product name | Release(s)| OS(s)|
 |--|--|--|--|
-| Kingston | HyperX Cloud II Wireless| v1.0-1.4 | Windows 10
-| HP | HyperX Cloud II Wireless | v1.4 | Windows 10, Windows 11
-| HP | HyperX Cloud II Core Wireless | v1.4 | Windows 10
+| Kingston | HyperX Cloud II Wireless| v1.0+ | Windows 10
+| HP | HyperX Cloud II Wireless | v1.4+ | Windows 10, Windows 11
+| HP | HyperX Cloud II Core Wireless | v1.4+ | Windows 10
+| HP | HyperX Cloud Alpha Wireless | v1.5+ | Unknown
 
 
 ## Special thanks
@@ -81,6 +82,8 @@ A: Basically I used wireshark to find the data and responses which had the batte
 [libusb/hidapi](https://github.com/libusb/hidapi)
 
 [zeux/pugixml](https://github.com/zeux/pugixml)
+
+[ArthurGamerHD](https://github.com/ArthurGamerHD)
 
 ## License
 
