@@ -11,6 +11,8 @@ The aim of the project is simple, to create a somewhat customizable battery moni
 
 **HP HyperX Cloud II Core Wireless**
 
+**HP HyperX Cloud Alpha Wireless**
+
 If you would like a different Cloud Wireless headset supported, feel free to create an issue here on Github but beware that I will ask you for assistance (eg. Wireshark USB traffic recordings).
 
 ## How to install

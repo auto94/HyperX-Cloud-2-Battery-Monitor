@@ -290,9 +290,15 @@ namespace Cloud2BatteryMonitorUI {
 		}
 #pragma endregion
 
+#define NO_DEVICE_STRING "No headset device detected."
+#define BATTERY_LEVEL_STRING "Battery level: "
+#define FONT "Tahoma"
+
 	private: System::Void MainForm_Load(System::Object^ sender, System::EventArgs^ e) 
 	{
 		struct hid_device_info* cloud2DeviceInfo = getHeadsetDeviceInfo();
+
+
 
 		if (cloud2DeviceInfo != NULL)
 		{
@@ -333,12 +339,16 @@ namespace Cloud2BatteryMonitorUI {
 					}
 				}
 
+				wchar_t productName[50];
+				hid_get_product_string(headsetDevice, productName, 50);
+
 				System::String^ batStr2 = gcnew System::String(to_string(batteryLevel).c_str());
-				RefreshTrayIcon(batStr2);
+				System::String^ prodStr = gcnew System::String(productName);
+				RefreshTrayIcon(batStr2, prodStr);
 			}
 			else 
 			{
-				this->iconSystemTray->Text = "Battery level N/A";
+				this->iconSystemTray->Text = NO_DEVICE_STRING;
 				this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
 				this->lbStatus->Text = "Could not connect to headset.";
 				this->btnRefresh->Visible = true;
@@ -348,7 +358,7 @@ namespace Cloud2BatteryMonitorUI {
 		}
 		else 
 		{
-			this->iconSystemTray->Text = "Battery level N/A";
+			this->iconSystemTray->Text = NO_DEVICE_STRING;
 			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
 			this->lbStatus->Text = "No headset device detected.";
 			this->btnRefresh->Visible = true;
@@ -399,21 +409,21 @@ namespace Cloud2BatteryMonitorUI {
 		}
 	}
 
-	private: System::Void RefreshTrayIcon(System::String^ batteryLevel)
+	private: System::Void RefreshTrayIcon(System::String^ batteryLevel, System::String^ productName)
 	{
 		int battLvl = System::Int32::Parse(batteryLevel);
 		System::Drawing::Font^ iconFont;
 		if (battLvl == 100) 
 		{
-			iconFont = gcnew System::Drawing::Font("Tahoma", 8, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
+			iconFont = gcnew System::Drawing::Font(FONT, 8, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
 		}
 		else if (battLvl < 10) 
 		{
-			iconFont = gcnew System::Drawing::Font("Tahoma", 13, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
+			iconFont = gcnew System::Drawing::Font(FONT, 13, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
 		}
 		else 
 		{
-			iconFont = gcnew System::Drawing::Font("Tahoma", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
+			iconFont = gcnew System::Drawing::Font(FONT, 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
 		}
 
 		System::Drawing::Brush^ iconBrush = gcnew System::Drawing::SolidBrush(System::Drawing::Color::White);
@@ -444,15 +454,22 @@ namespace Cloud2BatteryMonitorUI {
 		iconGraphics->DrawString(batteryLevel, iconFont, iconBrush, 0, 0);
 
 		ptrIcon = (textBitmap->GetHicon());
-		if (battLvl > 0) 
+
+		String^ TrayText = productName + "\n";
+
+		if (battLvl > 0 && battLvl <= 100)
 		{
+			TrayText +=  BATTERY_LEVEL_STRING + batteryLevel + "%";
+
 			this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(ptrIcon);
-			this->iconSystemTray->Text = "Battery level: " + batteryLevel + " %";
+			this->iconSystemTray->Text = TrayText;
 		}
 		else 
 		{
+			TrayText += BATTERY_LEVEL_STRING + "N/A";
+
 			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
-			this->iconSystemTray->Text = "Battery level N/A";
+			this->iconSystemTray->Text = TrayText;
 		}
 
 		delete iconBrush;
