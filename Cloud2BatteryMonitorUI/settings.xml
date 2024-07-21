@@ -8,4 +8,5 @@
 	<setting name="colorLow">-3801088 </setting>
 	<setting name="colorLowText">-1</setting>
 	<setting name="refreshMinutes">5</setting>
+	<setting name="batteryIcon">false</setting>
 </settings>
