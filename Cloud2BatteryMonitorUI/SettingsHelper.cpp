@@ -130,3 +130,26 @@ void SettingsHelper::setAutostart(bool autostart)
 {
     settingsNode.find_child_by_attribute(XML_ELEM_SETTING, XML_ATTR_NAME, "autostart").text().set(autostart);
 }
+
+bool SettingsHelper::getBatIcon()
+{
+    pugi::xml_node batNode = settingsNode.find_child_by_attribute(XML_ELEM_SETTING, XML_ATTR_NAME, "batteryIcon");
+
+    return settingsNode.find_child_by_attribute(XML_ELEM_SETTING, XML_ATTR_NAME, "batteryIcon").text().as_bool();
+}
+
+void SettingsHelper::setBatIcon(bool useBatIcon)
+{
+    pugi::xml_node batNode = settingsNode.find_child_by_attribute(XML_ELEM_SETTING, XML_ATTR_NAME, "batteryIcon");
+    if (!batNode)
+    {
+        pugi::xml_node newNode = settingsNode.append_child("setting");
+        pugi::xml_attribute attribute = newNode.append_attribute("name");
+        attribute.set_value("batteryIcon");
+        newNode.text().set(useBatIcon);
+    }
+    else
+    {
+        batNode.text().set(useBatIcon);
+    }
+}

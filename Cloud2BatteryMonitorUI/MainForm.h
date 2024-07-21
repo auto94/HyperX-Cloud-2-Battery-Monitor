@@ -412,6 +412,38 @@ namespace Cloud2BatteryMonitorUI {
 	private: System::Void RefreshTrayIcon(System::String^ batteryLevel, System::String^ productName)
 	{
 		int battLvl = System::Int32::Parse(batteryLevel);
+		String^ trayText = productName + "\n";
+		SettingsHelper* settingsHelper = new SettingsHelper();
+
+		if (battLvl > 0 && battLvl <= 100)
+		{
+			if (settingsHelper->getBatIcon())
+			{
+				this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(RefreshTrayBattery(battLvl, settingsHelper));
+			}
+			else
+			{
+				this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(RefreshTrayNumber(batteryLevel, settingsHelper));
+			}
+
+			trayText += BATTERY_LEVEL_STRING + batteryLevel + "%";
+			this->iconSystemTray->Text = trayText;
+		}
+		else
+		{
+			trayText += BATTERY_LEVEL_STRING + "N/A";
+
+			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
+			this->iconSystemTray->Text = trayText;
+		}
+
+		delete trayText;
+		delete settingsHelper;
+	}
+
+	private: System::IntPtr RefreshTrayNumber(System::String^ batteryLevel, SettingsHelper* settingsHelper)
+	{
+		int battLvl = System::Int32::Parse(batteryLevel);
 		System::Drawing::Font^ iconFont;
 		if (battLvl == 100) 
 		{
@@ -430,9 +462,6 @@ namespace Cloud2BatteryMonitorUI {
 		System::Drawing::Bitmap^ textBitmap = gcnew System::Drawing::Bitmap(16, 16);
 		System::Drawing::Graphics^ iconGraphics;
 		iconGraphics = iconGraphics->FromImage(textBitmap);
-
-		System::IntPtr ptrIcon;
-		SettingsHelper* settingsHelper = new SettingsHelper();
 
 		if (battLvl > 49) 
 		{
@@ -453,30 +482,54 @@ namespace Cloud2BatteryMonitorUI {
 		iconGraphics->TextRenderingHint = System::Drawing::Text::TextRenderingHint::SingleBitPerPixelGridFit;
 		iconGraphics->DrawString(batteryLevel, iconFont, iconBrush, 0, 0);
 
-		ptrIcon = (textBitmap->GetHicon());
-
-		String^ TrayText = productName + "\n";
-
-		if (battLvl > 0 && battLvl <= 100)
-		{
-			TrayText +=  BATTERY_LEVEL_STRING + batteryLevel + "%";
-
-			this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(ptrIcon);
-			this->iconSystemTray->Text = TrayText;
-		}
-		else 
-		{
-			TrayText += BATTERY_LEVEL_STRING + "N/A";
-
-			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
-			this->iconSystemTray->Text = TrayText;
-		}
-
 		delete iconBrush;
-		delete textBitmap;
 		delete iconFont;
 		delete iconGraphics;
-		delete settingsHelper;
+
+		return textBitmap->GetHicon();
+	}
+
+	private: System::IntPtr RefreshTrayBattery(int battLvl, SettingsHelper* settingsHelper)
+	{
+		// For icon fill height, round the battery level to the nearest 10, then divide it by 10. One is added later as that is the minimum.
+		int fillHeight = ((battLvl / 10) * 10) / 10;
+
+		System::Drawing::Brush^ batFillBrush = gcnew System::Drawing::SolidBrush(System::Drawing::Color::White);
+		System::Drawing::Brush^ batOutlineBrush = gcnew System::Drawing::SolidBrush(System::Drawing::Color::Blue);
+
+		if (battLvl > 49)
+		{
+			batOutlineBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorHighText());
+			batFillBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorHigh());
+		}
+		else if (battLvl > 19)
+		{
+			batOutlineBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorMedText());
+			batFillBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorMed());
+		}
+		else
+		{
+			batOutlineBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorLowText());
+			batFillBrush = gcnew System::Drawing::SolidBrush(settingsHelper->getColorLow());
+		}
+
+		System::Drawing::Bitmap^ batBitmap = gcnew System::Drawing::Bitmap(16, 16);
+		System::Drawing::Graphics^ batGraphics = System::Drawing::Graphics::FromImage(batBitmap);
+
+		// Draw outline of battery
+		System::Drawing::Pen^ batPen = gcnew System::Drawing::Pen(batOutlineBrush);
+		batGraphics->DrawRectangle(batPen, 2, 3, 11, 12);
+		batGraphics->FillRectangle(batOutlineBrush, 6, 0, 4, 2);
+
+		// Fill in the level
+		batGraphics->FillRectangle(batFillBrush, 3, 14 - fillHeight, 10, fillHeight + 1);
+
+		delete batFillBrush;
+		delete batOutlineBrush;
+		delete batGraphics;
+		delete batPen;
+		
+		return batBitmap->GetHicon();
 	}
 
 	private: System::Void BtnRefresh_Click(System::Object^ sender, System::EventArgs^ e) 

@@ -51,6 +51,7 @@ namespace Cloud2BatteryMonitorUI {
 	private: System::Windows::Forms::Label^ lbText;
 	private: System::Windows::Forms::Label^ lbRefresh;
 	private: System::Windows::Forms::NumericUpDown^ numRefreshMinutes;
+	private: System::Windows::Forms::CheckBox^ cbBatIcon;
 
 	private:
 		/// <summary>
@@ -81,6 +82,7 @@ namespace Cloud2BatteryMonitorUI {
 			this->lbText = (gcnew System::Windows::Forms::Label());
 			this->lbRefresh = (gcnew System::Windows::Forms::Label());
 			this->numRefreshMinutes = (gcnew System::Windows::Forms::NumericUpDown());
+			this->cbBatIcon = (gcnew System::Windows::Forms::CheckBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numRefreshMinutes))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -115,7 +117,7 @@ namespace Cloud2BatteryMonitorUI {
 			// 
 			this->cbStart->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
 			this->cbStart->AutoSize = true;
-			this->cbStart->Location = System::Drawing::Point(12, 154);
+			this->cbStart->Location = System::Drawing::Point(12, 180);
 			this->cbStart->Name = L"cbStart";
 			this->cbStart->Size = System::Drawing::Size(139, 17);
 			this->cbStart->TabIndex = 6;
@@ -200,7 +202,7 @@ namespace Cloud2BatteryMonitorUI {
 			this->btnSaveSettings->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
 			this->btnSaveSettings->BackColor = System::Drawing::Color::LightGray;
 			this->btnSaveSettings->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->btnSaveSettings->Location = System::Drawing::Point(165, 150);
+			this->btnSaveSettings->Location = System::Drawing::Point(165, 176);
 			this->btnSaveSettings->Name = L"btnSaveSettings";
 			this->btnSaveSettings->Size = System::Drawing::Size(138, 23);
 			this->btnSaveSettings->TabIndex = 16;
@@ -249,12 +251,25 @@ namespace Cloud2BatteryMonitorUI {
 			this->numRefreshMinutes->TabIndex = 20;
 			this->numRefreshMinutes->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
 			// 
+			// cbBatIcon
+			// 
+			this->cbBatIcon->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
+			this->cbBatIcon->AutoSize = true;
+			this->cbBatIcon->Location = System::Drawing::Point(12, 150);
+			this->cbBatIcon->Name = L"cbBatIcon";
+			this->cbBatIcon->Size = System::Drawing::Size(120, 17);
+			this->cbBatIcon->TabIndex = 21;
+			this->cbBatIcon->Text = L"Use battery as icon.";
+			this->cbBatIcon->UseVisualStyleBackColor = true;
+			this->cbBatIcon->CheckStateChanged += gcnew System::EventHandler(this, &SettingsForm::CBBatIcon_CheckChange);
+			// 
 			// SettingsForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::Color::Silver;
-			this->ClientSize = System::Drawing::Size(316, 183);
+			this->ClientSize = System::Drawing::Size(316, 209);
+			this->Controls->Add(this->cbBatIcon);
 			this->Controls->Add(this->numRefreshMinutes);
 			this->Controls->Add(this->lbRefresh);
 			this->Controls->Add(this->lbText);
@@ -272,8 +287,8 @@ namespace Cloud2BatteryMonitorUI {
 			this->Controls->Add(this->lbSettingsHigh);
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->MaximizeBox = false;
-			this->MaximumSize = System::Drawing::Size(332, 222);
-			this->MinimumSize = System::Drawing::Size(332, 222);
+			this->MaximumSize = System::Drawing::Size(332, 248);
+			this->MinimumSize = System::Drawing::Size(332, 248);
 			this->Name = L"SettingsForm";
 			this->Text = L"Settings";
 			this->Load += gcnew System::EventHandler(this, &SettingsForm::SettingsForm_Load);
@@ -283,6 +298,11 @@ namespace Cloud2BatteryMonitorUI {
 
 		}
 #pragma endregion
+
+#define FILL_STRING "Fill"
+#define OUTLINE_STRING "Outline"
+#define BACKGROUND_STRING "Background"
+#define TEXT_STRING "Text"
 
 	private: System::Void SettingsForm_Load(System::Object^ sender, System::EventArgs^ e) 
 	{
@@ -296,8 +316,30 @@ namespace Cloud2BatteryMonitorUI {
 		this->btnLow->BackColor = settingsHelper->getColorLow();
 		this->btnLowText->BackColor = settingsHelper->getColorLowText();
 		this->cbStart->Checked = settingsHelper->getAutostart();
+		this->cbBatIcon->Checked = settingsHelper->getBatIcon();
+
+		if (cbBatIcon->Checked)
+		{
+			this->lbBackground->Text = FILL_STRING;
+			this->lbText->Text = OUTLINE_STRING;
+		}
 
 		delete settingsHelper;
+	}
+
+	private: System::Void CBBatIcon_CheckChange(System::Object^ sender, System::EventArgs^ e)
+	{
+
+		if (cbBatIcon->Checked)
+		{
+			this->lbBackground->Text = FILL_STRING;
+			this->lbText->Text = OUTLINE_STRING;
+		}
+		else
+		{
+			this->lbBackground->Text = BACKGROUND_STRING;
+			this->lbText->Text = TEXT_STRING;
+		}
 	}
 
 	private: System::Void colorBtnClick(System::Object^ sender, System::EventArgs^ e) 
@@ -326,6 +368,7 @@ namespace Cloud2BatteryMonitorUI {
 		settingsHelper->setColorLow(this->btnLow->BackColor);
 		settingsHelper->setColorLowText(this->btnLowText->BackColor);
 		settingsHelper->setAutostart(this->cbStart->Checked);
+		settingsHelper->setBatIcon(this->cbBatIcon->Checked);
 
 		settingsHelper->saveSettings();
 

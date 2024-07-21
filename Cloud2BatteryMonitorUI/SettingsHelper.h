@@ -36,5 +36,7 @@ public:
     void setColorLowText(Color);
     bool getAutostart();
     void setAutostart(bool);
+    bool getBatIcon();
+    void setBatIcon(bool);
 
 };
