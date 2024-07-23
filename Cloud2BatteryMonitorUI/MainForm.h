@@ -447,7 +447,7 @@ namespace Cloud2BatteryMonitorUI {
 		System::Drawing::Font^ iconFont;
 		if (battLvl == 100) 
 		{
-			iconFont = gcnew System::Drawing::Font(FONT, 8, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
+			iconFont = gcnew System::Drawing::Font(FONT, 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Pixel);
 		}
 		else if (battLvl < 10) 
 		{
@@ -479,12 +479,15 @@ namespace Cloud2BatteryMonitorUI {
 			iconGraphics->Clear(settingsHelper->getColorLow());
 		}
 
+		System::Drawing::SizeF strSize = iconGraphics->MeasureString(batteryLevel, iconFont);
+
 		iconGraphics->TextRenderingHint = System::Drawing::Text::TextRenderingHint::SingleBitPerPixelGridFit;
-		iconGraphics->DrawString(batteryLevel, iconFont, iconBrush, 0, 0);
+		iconGraphics->DrawString(batteryLevel, iconFont, iconBrush, (17 - strSize.Width) / 2, (17 - strSize.Height) / 2);
 
 		delete iconBrush;
 		delete iconFont;
 		delete iconGraphics;
+		delete strSize;
 
 		return textBitmap->GetHicon();
 	}
