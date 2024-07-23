@@ -28,6 +28,7 @@ The app consists of two forms/screens and a system tray icon.
 **Example battery icon:**
 
 ![icon_example](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/9ee9dc07-c16e-4f36-9f9f-457e2af8634f)
+![image](https://github.com/user-attachments/assets/ad198f64-6681-44b4-a9b5-f3e02134faa0)
 
 **Main screen:**
 
@@ -43,13 +44,14 @@ The app consists of two forms/screens and a system tray icon.
 |Setting| Default value | Type| Explanation|
 |--|--|--|--|
 | autostart | false | bool (true/false) | Adds app to start at boot registry
-| colorHigh| -16776961 (darkish blue)| int (int of color argb) | System tray icon background (50-100% battery)
-| colorHighText| -1 (white)| int (int of color argb) | System tray icon text (50-100% battery)
-| colorMed| -8388480 (dark magenta)| int (int of color argb) | System tray icon background (20-49% battery)
-| colorMedText| -1 (white)| int (int of color argb) | System tray icon text (20-49% battery)
-| colorLow| -3801088 (dark red)| int (int of color argb) | System tray icon background (0-19% battery)
-| colorLowText| -1 (white)| int (int of color argb) | System tray icon text (0-19%) battery
+| colorHigh| -16776961 (darkish blue)| int (int of color argb) | System tray icon background / battery icon fill color (50-100% battery)
+| colorHighText| -1 (white)| int (int of color argb) | System tray icon text / battery icon outline color (50-100% battery)
+| colorMed| -8388480 (dark magenta)| int (int of color argb) | System tray icon background / battery icon fill color (20-49% battery)
+| colorMedText| -1 (white)| int (int of color argb) | System tray icon text / battery icon outline color (20-49% battery)
+| colorLow| -3801088 (dark red)| int (int of color argb) | System tray icon background / battery icon fill color (0-19% battery)
+| colorLowText| -1 (white)| int (int of color argb) | System tray icon text / battery icon outline color (0-19%) battery
 | refreshMinutes| 5| positive int | System tray icon refresh timer length
+| batteryIcon| false| bool (true/false) | Switches to the battery icon.
 
 If you accidentally delete the settings file then just download the one in this repository ([settings.xml](Cloud2BatteryMonitorUI/settings.xml)) and place it in the folder which contains your exe.
 
