@@ -17,7 +17,7 @@ If you would like a different Cloud Wireless headset supported, feel free to cre
 
 ## How to install
 
-You can download [release v1.5 here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.5/Cloud2BatteryMonitor_v1.5.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
+You can download [release v1.6 here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.6/Cloud2BatteryMonitor_v1.6a.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
 
 No installation is necessary.
 
@@ -28,7 +28,7 @@ The app consists of two forms/screens and a system tray icon.
 **Example battery icon:**
 
 ![icon_example](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/9ee9dc07-c16e-4f36-9f9f-457e2af8634f)
-![image](https://github.com/user-attachments/assets/ad198f64-6681-44b4-a9b5-f3e02134faa0)
+![icon_example2](https://github.com/user-attachments/assets/ad198f64-6681-44b4-a9b5-f3e02134faa0)
 
 **Main screen:**
 
@@ -37,7 +37,8 @@ The app consists of two forms/screens and a system tray icon.
 
 **Settings screen:**
 
-![settings_form](https://github.com/auto94/Cloud2-Battery-Monitor/assets/36648280/bb00d0a5-60b1-4df8-9ab7-e94d2838325c)
+![settings_form](https://github.com/user-attachments/assets/79c7fe4a-3f13-40a4-b3b4-776aef14fe8f)
+
 
 ## Default settings
 
