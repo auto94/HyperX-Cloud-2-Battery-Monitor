@@ -17,7 +17,7 @@ If you would like a different Cloud Wireless headset supported, feel free to cre
 
 ## How to install
 
-You can download [release v1.6 here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.6/Cloud2BatteryMonitor_v1.6a.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
+You can download [release v1.7a here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.7a/Cloud2BatteryMonitor_v1.7a.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
 
 No installation is necessary.
 
@@ -57,6 +57,10 @@ The app consists of two forms/screens and a system tray icon.
 If you accidentally delete the settings file then just download the one in this repository ([settings.xml](Cloud2BatteryMonitorUI/settings.xml)) and place it in the folder which contains your exe.
 
 ## FAQ
+
+**Q: The app stopped working, it says "Headset found but not active" even though it's working!**
+
+A: Try to power cycle the headset and if that doesn't work, remove and reconnect the headsets USB dongle from your USB port.
 
 **Q: The app won't automatically start at boot.**
 
