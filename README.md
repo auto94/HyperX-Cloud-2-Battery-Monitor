@@ -15,6 +15,10 @@ The aim of the project is simple, to create a somewhat customizable battery moni
 
 If you would like a different Cloud Wireless headset supported, feel free to create an issue here on Github but beware that I will ask you for assistance (eg. Wireshark USB traffic recordings).
 
+## Requirements
+
+[Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version)
+
 ## How to install
 
 You can download [release v1.7a here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.7a/Cloud2BatteryMonitor_v1.7a.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
