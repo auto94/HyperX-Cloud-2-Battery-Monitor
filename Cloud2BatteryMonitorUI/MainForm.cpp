@@ -82,8 +82,8 @@ int getBatteryLevel(hid_device* headsetDevice)
 
 			batteryByteInt = 4;
 		}
-		else if (wcsstr(productName, L"Cloud II Wireless") != 0) {
-			// HP Cloud II Wireless data
+		else if (wcsstr(productName, L"Cloud II Wireless") != 0 || wcsstr(productName, L"Cloud Stinger 2 Wireless") != 0) {
+			// HP Cloud II Wireless data = HP Cloud Stinger 2 Wireless data
 			writeBuffer[0] = 0x06;
 			writeBuffer[1] = 0xff;
 			writeBuffer[2] = 0xbb;
