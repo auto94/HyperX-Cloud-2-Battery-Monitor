@@ -13,6 +13,8 @@ The aim of the project is simple, to create a somewhat customizable battery moni
 
 **HP HyperX Cloud Alpha Wireless**
 
+**HP HyperX Cloud Stinger 2 Wireless**
+
 If you would like a different Cloud Wireless headset supported, feel free to create an issue here on Github but beware that I will ask you for assistance (eg. Wireshark USB traffic recordings).
 
 ## Requirements
@@ -21,7 +23,7 @@ If you would like a different Cloud Wireless headset supported, feel free to cre
 
 ## How to install
 
-You can download [release v1.7a here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.7a/Cloud2BatteryMonitor_v1.7a.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
+You can download [release v1.8 here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/download/Release_v1.8/Cloud2BatteryMonitor_v1.8.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
 
 No installation is necessary.
 
@@ -86,6 +88,7 @@ A: Basically I used wireshark to find the data and responses which had the batte
 | HP | HyperX Cloud II Wireless | v1.4+ | Windows 10, Windows 11
 | HP | HyperX Cloud II Core Wireless | v1.4+ | Windows 10
 | HP | HyperX Cloud Alpha Wireless | v1.5+ | Unknown
+| HP | HyperX Cloud Stinger 2 Wireless | v1.8+ | Unknown
 
 
 ## Special thanks
