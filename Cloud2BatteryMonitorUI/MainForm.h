@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include "SettingsForm.h"
 
+[System::Runtime::InteropServices::DllImport("user32.dll", CharSet = System::Runtime::InteropServices::CharSet::Auto)]
+extern "C" bool DestroyIcon(System::IntPtr hIcon);
+
 constexpr auto HEADSET_VENDOR_ID_KINGSTON = 2385;
 constexpr auto HEADSET_VENDOR_ID_HP = 1008;
 
@@ -419,14 +422,25 @@ namespace Cloud2BatteryMonitorUI {
 
 		if (battLvl > 0 && battLvl <= 100)
 		{
+			System::IntPtr ptrHandler;
+			System::Drawing::Icon^ oldIcon = this->iconSystemTray->Icon;
+
 			if (settingsHelper->getBatIcon())
 			{
-				this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(RefreshTrayBattery(battLvl, settingsHelper));
+				ptrHandler = RefreshTrayBattery(battLvl, settingsHelper);
 			}
 			else
 			{
-				this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(RefreshTrayNumber(batteryLevel, settingsHelper));
+				ptrHandler = RefreshTrayNumber(batteryLevel, settingsHelper);
 			}
+
+			this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(ptrHandler);
+
+			if (oldIcon != nullptr) {
+				delete oldIcon;
+			}
+
+			DestroyIcon(ptrHandler);
 
 			trayText += BATTERY_LEVEL_STRING + batteryLevel + "%";
 			this->iconSystemTray->Text = trayText;

@@ -35,6 +35,10 @@ namespace Cloud2BatteryMonitorUI {
 			{
 				delete components;
 			}
+			if (this->Icon != nullptr)
+			{
+				delete this->Icon;
+			}
 		}
 	private: System::Windows::Forms::Label^ lbSettingsHigh;
 	private: System::Windows::Forms::Label^ lbSettingsMid;
@@ -345,15 +349,20 @@ namespace Cloud2BatteryMonitorUI {
 	private: System::Void colorBtnClick(System::Object^ sender, System::EventArgs^ e) 
 	{
 		ColorDialog^ colorDlg = gcnew ColorDialog();
-		colorDlg->AllowFullOpen = true;
-		colorDlg->AnyColor = true;
-		colorDlg->SolidColorOnly = false;
-		colorDlg->Color = Color::Red;
+		try {
+			colorDlg->AllowFullOpen = true;
+			colorDlg->AnyColor = true;
+			colorDlg->SolidColorOnly = false;
+			colorDlg->Color = Color::Red;
 
-		if (colorDlg->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-		{
-			Button^ button = (Button^)sender;
-			button->BackColor = colorDlg->Color;
+			if (colorDlg->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			{
+				Button^ button = (Button^)sender;
+				button->BackColor = colorDlg->Color;
+			}
+		}
+		finally {
+			delete colorDlg;
 		}
 	}
 

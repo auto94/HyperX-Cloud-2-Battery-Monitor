@@ -50,6 +50,8 @@ hid_device_info* getHeadsetDeviceInfo()
 		}
 	}
 
+	hid_free_enumeration(devices);
+
 	return deviceInfo;
 }
 /**
