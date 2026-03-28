@@ -39,12 +39,19 @@ namespace Cloud2BatteryMonitorUI {
 	{
 	public:
 		System::Windows::Forms::Timer^ timerRefresh = gcnew System::Windows::Forms::Timer();
+
+		//a variable to hold offline icon permanently
+		System::Drawing::Icon^ defaultOfflineIcon;
+
 		MainForm(void)
 		{
 			InitializeComponent();
 			//
 			//TODO: Add the constructor code here
 			//
+			
+			//load the offline icon exactly once into memory
+			defaultOfflineIcon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
 		}
 
 	protected:
@@ -57,6 +64,9 @@ namespace Cloud2BatteryMonitorUI {
 			{
 				delete components;
 			}
+
+			//dispose of the cached offline icon when the app closes
+			delete defaultOfflineIcon;
 		}
 	
 	//for cleaning the icon leak
@@ -361,7 +371,8 @@ namespace Cloud2BatteryMonitorUI {
 			else 
 			{
 				this->iconSystemTray->Text = NO_DEVICE_STRING;
-				this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
+				//use loaded offline icon
+				this->iconSystemTray->Icon = defaultOfflineIcon;
 				this->lbStatus->Text = "Could not connect to headset.";
 				this->btnRefresh->Visible = true;
 			}
@@ -369,7 +380,8 @@ namespace Cloud2BatteryMonitorUI {
 		else 
 		{
 			this->iconSystemTray->Text = NO_DEVICE_STRING;
-			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
+			//use loaded offline icon
+			this->iconSystemTray->Icon = defaultOfflineIcon;
 			this->lbStatus->Text = "No headset device detected.";
 			this->btnRefresh->Visible = true;
 		}
@@ -454,7 +466,8 @@ namespace Cloud2BatteryMonitorUI {
 		{
 			trayText += BATTERY_LEVEL_STRING + "N/A";
 
-			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
+			//use loaded offline icon
+			this->iconSystemTray->Icon = defaultOfflineIcon;
 			this->iconSystemTray->Text = trayText;
 		}
 
