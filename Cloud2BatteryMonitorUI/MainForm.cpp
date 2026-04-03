@@ -7,8 +7,8 @@ void main()
 {
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);
-	Cloud2BatteryMonitorUI::MainForm form;
 	Environment::CurrentDirectory = IO::Path::GetDirectoryName(Application::ExecutablePath);
+	Cloud2BatteryMonitorUI::MainForm form;
 	Application::Run(% form);
 }
 
@@ -45,6 +45,19 @@ std::string getHeadsetDevicePath()
 			foundPath = current->path; // Copy the path
 			hid_free_enumeration(devices); // FREE THE MEMORY
 			return foundPath;              // Return early
+		}
+	}
+
+	// Special case for HyperX Cloud III Wireless
+	// the 'highest usage' method used below is not applicable here either
+	for (struct hid_device_info* current = devices; current != nullptr && current->vendor_id == HEADSET_VENDOR_ID_HP && (current->product_id == HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4106 || current->product_id == HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4109); current = current->next)
+	{
+		// From log: the correct interface is usage_page 65299 and usage 1
+		if (current->usage_page == 65299 && current->usage == 1)
+		{
+			foundPath = current->path;   // Copy the path
+			hid_free_enumeration(devices); // FREE THE MEMORY
+			return foundPath;            // Return early
 		}
 	}
 
@@ -127,6 +140,13 @@ int getBatteryLevel(hid_device* headsetDevice)
 			writeBuffer[5] = 0x06;
 
 			batteryByteInt = 6;
+		}
+		else if (wcsstr(productName, L"Cloud III Wireless") != 0) {
+			// HP Cloud III Wireless data
+			writeBuffer[0] = 0x66;
+			writeBuffer[1] = 0x89;
+
+			batteryByteInt = 4;
 		}
 	}
 	else 
