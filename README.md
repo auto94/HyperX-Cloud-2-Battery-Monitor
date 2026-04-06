@@ -27,7 +27,7 @@ If you would like a different Cloud Wireless headset supported, feel free to cre
 
 ## How to install
 
-You can download [release v2.1 here](https://github.com/elazarit/HyperX-Cloud-2-Battery-Monitor/releases/download/v2.1/HyperX-Cloud-2-Battery-Monitor-2.1.zip) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
+You can download [release v2.0 here](https://github.com/auto94/HyperX-Cloud-2-Battery-Monitor/releases/tag/Release_v2.0) or select the latest release on the right side of this Github repository and download the zip. After the download is complete, extract the zip and run "Cloud2BatteryMonitorUI.exe". 
 
 No installation is necessary.
 
@@ -94,7 +94,7 @@ A: Basically I used wireshark to find the data and responses which had the batte
 | HP | HyperX Cloud Alpha Wireless | v1.5+ | Unknown
 | HP | HyperX Cloud Stinger 2 Wireless | v1.8+ | Unknown
 | HP | HyperX Cloud III S Wireless | v2.0+ | Unknown
-| HP | HyperX Cloud III Wireless | v2.02+ | Unknown
+| HP | HyperX Cloud III Wireless | v2.0+ | Unknown
 
 
 ## Special thanks
