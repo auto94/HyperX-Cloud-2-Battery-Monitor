@@ -14,11 +14,14 @@ constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_II_B = 1686;
 constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_II_CORE = 2453;
 constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_ALPHA = 2445;
 constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_STINGER_II = 3475;
+constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_III_S = 1726;
+constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4106 = 3229;
+constexpr auto HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4109 = 1463;
 
-const int VENDORS_ARRAY[] = { HEADSET_VENDOR_ID_KINGSTON, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP};
-const int PRODUCTS_ARRAY[] = { HEADSET_PRODUCT_ID_KINGSTON_CLOUD_II, HEADSET_PRODUCT_ID_HP_CLOUD_II, HEADSET_PRODUCT_ID_HP_CLOUD_II_CORE, HEADSET_PRODUCT_ID_HP_CLOUD_ALPHA, HEADSET_PRODUCT_ID_HP_CLOUD_II_B, HEADSET_PRODUCT_ID_HP_CLOUD_STINGER_II};
+const int VENDORS_ARRAY[] = { HEADSET_VENDOR_ID_KINGSTON, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP, HEADSET_VENDOR_ID_HP};
+const int PRODUCTS_ARRAY[] = { HEADSET_PRODUCT_ID_KINGSTON_CLOUD_II, HEADSET_PRODUCT_ID_HP_CLOUD_II, HEADSET_PRODUCT_ID_HP_CLOUD_II_CORE, HEADSET_PRODUCT_ID_HP_CLOUD_ALPHA, HEADSET_PRODUCT_ID_HP_CLOUD_II_B, HEADSET_PRODUCT_ID_HP_CLOUD_STINGER_II, HEADSET_PRODUCT_ID_HP_CLOUD_III_S, HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4106, HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4109};
 
-hid_device_info* getHeadsetDeviceInfo();
+std::string getHeadsetDevicePath(); 
 int getBatteryLevel(hid_device*);
 
 
@@ -38,12 +41,19 @@ namespace Cloud2BatteryMonitorUI {
 	{
 	public:
 		System::Windows::Forms::Timer^ timerRefresh = gcnew System::Windows::Forms::Timer();
+
+		//a variable to hold offline icon permanently
+		System::Drawing::Icon^ defaultOfflineIcon;
+
 		MainForm(void)
 		{
 			InitializeComponent();
 			//
 			//TODO: Add the constructor code here
 			//
+			
+			//load the offline icon exactly once into memory
+			defaultOfflineIcon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
 		}
 
 	protected:
@@ -56,7 +66,16 @@ namespace Cloud2BatteryMonitorUI {
 			{
 				delete components;
 			}
+
+			//dispose of the cached offline icon when the app closes
+			delete defaultOfflineIcon;
 		}
+	
+	//for cleaning the icon leak
+	private:
+			[System::Runtime::InteropServices::DllImportAttribute("user32.dll")]
+			static bool DestroyIcon(System::IntPtr handle);
+
 	private: System::Windows::Forms::Label^ lbStatus;
 	protected:
 	private: System::Windows::Forms::Label^ lbHeadsetInfoManu;
@@ -298,13 +317,12 @@ namespace Cloud2BatteryMonitorUI {
 
 	private: System::Void MainForm_Load(System::Object^ sender, System::EventArgs^ e) 
 	{
-		struct hid_device_info* cloud2DeviceInfo = getHeadsetDeviceInfo();
+		//gets the path as a string instead of hid_device_info* which caused memory leak every cycle
+		std::string devicePath = getHeadsetDevicePath();
 
-
-
-		if (cloud2DeviceInfo != NULL)
+		if (!devicePath.empty())
 		{
-			hid_device* headsetDevice = hid_open_path(cloud2DeviceInfo->path);
+			hid_device* headsetDevice = hid_open_path(devicePath.c_str());
 
 			if (headsetDevice != NULL) 
 			{
@@ -347,21 +365,25 @@ namespace Cloud2BatteryMonitorUI {
 				System::String^ batStr2 = gcnew System::String(to_string(batteryLevel).c_str());
 				System::String^ prodStr = gcnew System::String(productName);
 				RefreshTrayIcon(batStr2, prodStr);
+				
+				//close the connection only if it was opened.
+				hid_close(headsetDevice);
+
 			}
 			else 
 			{
 				this->iconSystemTray->Text = NO_DEVICE_STRING;
-				this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
+				//use loaded offline icon
+				this->iconSystemTray->Icon = defaultOfflineIcon;
 				this->lbStatus->Text = "Could not connect to headset.";
 				this->btnRefresh->Visible = true;
 			}
-
-			hid_close(headsetDevice);
 		}
 		else 
 		{
 			this->iconSystemTray->Text = NO_DEVICE_STRING;
-			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
+			//use loaded offline icon
+			this->iconSystemTray->Icon = defaultOfflineIcon;
 			this->lbStatus->Text = "No headset device detected.";
 			this->btnRefresh->Visible = true;
 		}
@@ -419,14 +441,25 @@ namespace Cloud2BatteryMonitorUI {
 
 		if (battLvl > 0 && battLvl <= 100)
 		{
+			//a place to store the unmanaged handle
+			System::IntPtr hIcon;
+
 			if (settingsHelper->getBatIcon())
 			{
-				this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(RefreshTrayBattery(battLvl, settingsHelper));
+				//catch the handle from the Battery icon generator
+				hIcon = RefreshTrayBattery(battLvl, settingsHelper);
 			}
 			else
 			{
-				this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(RefreshTrayNumber(batteryLevel, settingsHelper));
+				//catch the handle from the Number icon generator
+				hIcon = RefreshTrayNumber(batteryLevel, settingsHelper);
 			}
+
+			//apply icon
+			this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(hIcon);
+
+			//destroy the unmanaged handle!
+			DestroyIcon(hIcon);
 
 			trayText += BATTERY_LEVEL_STRING + batteryLevel + "%";
 			this->iconSystemTray->Text = trayText;
@@ -435,11 +468,11 @@ namespace Cloud2BatteryMonitorUI {
 		{
 			trayText += BATTERY_LEVEL_STRING + "N/A";
 
-			this->iconSystemTray->Icon = System::Drawing::Icon::ExtractAssociatedIcon("icons\\headset_icon_light.ico");
+			//use loaded offline icon
+			this->iconSystemTray->Icon = defaultOfflineIcon;
 			this->iconSystemTray->Text = trayText;
 		}
 
-		delete trayText;
 		delete settingsHelper;
 	}
 
@@ -489,9 +522,11 @@ namespace Cloud2BatteryMonitorUI {
 		delete iconBrush;
 		delete iconFont;
 		delete iconGraphics;
-		delete strSize;
 
-		return textBitmap->GetHicon();
+		System::IntPtr hIcon = textBitmap->GetHicon(); // Extract the handle first
+		delete textBitmap; //dispose of the managed bitmap
+
+		return hIcon; //return the extracted handle
 	}
 
 	private: System::IntPtr RefreshTrayBattery(int battLvl, SettingsHelper* settingsHelper)
@@ -534,7 +569,10 @@ namespace Cloud2BatteryMonitorUI {
 		delete batGraphics;
 		delete batPen;
 		
-		return batBitmap->GetHicon();
+		System::IntPtr hIcon = batBitmap->GetHicon(); // Extract the handle first
+		delete batBitmap; // Dispose of the managed bitmap
+
+		return hIcon; // Return the extracted handle
 	}
 
 	private: System::Void BtnRefresh_Click(System::Object^ sender, System::EventArgs^ e) 

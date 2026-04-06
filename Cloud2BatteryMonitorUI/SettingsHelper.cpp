@@ -32,7 +32,7 @@ void SettingsHelper::saveSettings()
         LONG key = RegOpenKeyExA(HKEY_CURRENT_USER, REG_KEY_PATH, 0, KEY_WRITE, &hkey);
         if (ERROR_SUCCESS == key) 
         {
-            key = RegSetValueExA(hkey, APP_NAME, 0, REG_SZ, (BYTE*)FP.c_str(), strlen(FP.c_str()));
+            key = RegSetValueExA(hkey, APP_NAME, 0, REG_SZ, (BYTE*)FP.c_str(), strlen(FP.c_str())+1);
         }
         RegCloseKey(hkey);
     }
