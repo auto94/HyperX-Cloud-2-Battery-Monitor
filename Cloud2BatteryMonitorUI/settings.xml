@@ -9,4 +9,6 @@
 	<setting name="colorLowText">-1</setting>
 	<setting name="refreshMinutes">5</setting>
 	<setting name="batteryIcon">false</setting>
+	<setting name="lowBatteryPopupEnabled">false</setting>
+	<setting name="lowBatteryPopupLevel">20</setting>
 </settings>

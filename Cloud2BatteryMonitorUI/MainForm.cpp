@@ -30,14 +30,50 @@ std::string getHeadsetDevicePath()
 	}
 
 	if (devices == NULL) {
-		return ""; // Nothing found
+		// Fallback: find a supported headset by name, then re-enumerate by VID/PID
+		struct hid_device_info* allDevices = hid_enumerate(0, 0);
+
+		unsigned short foundVID = 0;
+		unsigned short foundPID = 0;
+
+		for (struct hid_device_info* current = allDevices; current != nullptr; current = current->next)
+		{
+			if ((current->vendor_id == HEADSET_VENDOR_ID_HP || current->vendor_id == HEADSET_VENDOR_ID_KINGSTON) &&
+				current->product_string != nullptr &&
+				(wcsstr(current->product_string, L"Cloud II Wireless") != 0 ||
+					wcsstr(current->product_string, L"Cloud Stinger 2 Wireless") != 0 ||
+					wcsstr(current->product_string, L"Cloud II Core") != 0 ||
+					wcsstr(current->product_string, L"Cloud Alpha Wireless") != 0 ||
+					wcsstr(current->product_string, L"Cloud III S Wireless") != 0 ||
+					wcsstr(current->product_string, L"Cloud III Wireless") != 0))
+			{
+				foundVID = current->vendor_id;
+				foundPID = current->product_id;
+				break;
+			}
+		}
+
+		hid_free_enumeration(allDevices);
+
+		if (foundVID == 0) {
+			return ""; // Nothing found
+		}
+
+		// Rebuild devices list using VID/PID (same behavior as original logic)
+		devices = hid_enumerate(foundVID, foundPID);
+
+		if (devices == NULL) {
+			return ""; // Safety check
+		}
 	}
 
 	std::string foundPath = "";
 
 	// Special case for hyperx cloud iii S
 	// the 'highest usage' method used below is not applicable here
-	for (struct hid_device_info* current = devices; current != nullptr && current->vendor_id == HEADSET_VENDOR_ID_HP && current->product_id == HEADSET_PRODUCT_ID_HP_CLOUD_III_S; current = current->next)
+	for (struct hid_device_info* current = devices; current != nullptr && current->vendor_id == HEADSET_VENDOR_ID_HP &&
+		(current->product_id == HEADSET_PRODUCT_ID_HP_CLOUD_III_S || (current->product_string != nullptr && wcsstr(current->product_string, L"Cloud III S Wireless") != 0)); 
+		current = current->next)
 	{
 		//looks like the correct condition is usage_page 448 and usage 1 combination
 		if (current->usage_page == 448 && current->usage == 1)
@@ -50,7 +86,9 @@ std::string getHeadsetDevicePath()
 
 	// Special case for HyperX Cloud III Wireless
 	// the 'highest usage' method used below is not applicable here either
-	for (struct hid_device_info* current = devices; current != nullptr && current->vendor_id == HEADSET_VENDOR_ID_HP && (current->product_id == HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4106 || current->product_id == HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4109); current = current->next)
+	for (struct hid_device_info* current = devices; current != nullptr && current->vendor_id == HEADSET_VENDOR_ID_HP &&
+		(current->product_id == HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4106 || current->product_id == HEADSET_PRODUCT_ID_HP_CLOUD_III_REV4109 || (current->product_string != nullptr && wcsstr(current->product_string, L"Cloud III Wireless") != 0)); 
+		current = current->next)
 	{
 		// From log: the correct interface is usage_page 65299 and usage 1
 		if (current->usage_page == 65299 && current->usage == 1)
