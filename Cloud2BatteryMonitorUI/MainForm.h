@@ -37,13 +37,17 @@ namespace Cloud2BatteryMonitorUI {
 	/// <summary>
 	/// Summary for MainForm
 	/// </summary>
-	public ref class MainForm : public System::Windows::Forms::Form
-	{
-	public:
-		System::Windows::Forms::Timer^ timerRefresh = gcnew System::Windows::Forms::Timer();
+		public ref class MainForm : public System::Windows::Forms::Form
+		{
+		public:
+			System::Windows::Forms::Timer^ timerRefresh = gcnew System::Windows::Forms::Timer();
+			bool lowBatteryPopupShown = false;
 
 		//a variable to hold offline icon permanently
 		System::Drawing::Icon^ defaultOfflineIcon;
+
+		//holds the currently generated tray icon so it can be disposed safely on refresh
+		System::Drawing::Icon^ currentTrayGeneratedIcon = nullptr;
 
 		MainForm(void)
 		{
@@ -65,6 +69,13 @@ namespace Cloud2BatteryMonitorUI {
 			if (components)
 			{
 				delete components;
+			}
+
+			//dispose of the current generated tray icon if it exists
+			if (currentTrayGeneratedIcon != nullptr)
+			{
+				delete currentTrayGeneratedIcon;
+				currentTrayGeneratedIcon = nullptr;
 			}
 
 			//dispose of the cached offline icon when the app closes
@@ -324,13 +335,31 @@ namespace Cloud2BatteryMonitorUI {
 		{
 			hid_device* headsetDevice = hid_open_path(devicePath.c_str());
 
-			if (headsetDevice != NULL) 
-			{
-				int batteryLevel = getBatteryLevel(headsetDevice);
-
-				// If the app is minized, only refresh the icon.
-				if (this->WindowState != FormWindowState::Minimized) 
+				if (headsetDevice != NULL) 
 				{
+					int batteryLevel = getBatteryLevel(headsetDevice);
+					SettingsHelper* settingsHelper = new SettingsHelper();
+
+					if (settingsHelper->getLowBatteryPopupEnabled() &&
+						batteryLevel > 0 &&
+						batteryLevel <= settingsHelper->getLowBatteryPopupLevel())
+					{
+						if (!lowBatteryPopupShown)
+						{
+							this->iconSystemTray->BalloonTipTitle = "Battery monitor";
+							this->iconSystemTray->BalloonTipText = "Battery level low: " + batteryLevel + "%";
+							this->iconSystemTray->ShowBalloonTip(5000);
+							lowBatteryPopupShown = true;
+						}
+					}
+					else
+					{
+						lowBatteryPopupShown = false;
+					}
+
+					// If the app is minized, only refresh the icon.
+					if (this->WindowState != FormWindowState::Minimized) 
+					{
 					wchar_t manufacturer[20];
 					hid_get_manufacturer_string(headsetDevice, manufacturer, 20);
 					wchar_t productName[50];
@@ -362,31 +391,34 @@ namespace Cloud2BatteryMonitorUI {
 				wchar_t productName[50];
 				hid_get_product_string(headsetDevice, productName, 50);
 
-				System::String^ batStr2 = gcnew System::String(to_string(batteryLevel).c_str());
-				System::String^ prodStr = gcnew System::String(productName);
-				RefreshTrayIcon(batStr2, prodStr);
-				
-				//close the connection only if it was opened.
-				hid_close(headsetDevice);
+					System::String^ batStr2 = gcnew System::String(to_string(batteryLevel).c_str());
+					System::String^ prodStr = gcnew System::String(productName);
+					RefreshTrayIcon(batStr2, prodStr);
+					delete settingsHelper;
+					
+					//close the connection only if it was opened.
+					hid_close(headsetDevice);
 
 			}
 			else 
 			{
 				this->iconSystemTray->Text = NO_DEVICE_STRING;
 				//use loaded offline icon
-				this->iconSystemTray->Icon = defaultOfflineIcon;
-				this->lbStatus->Text = "Could not connect to headset.";
-				this->btnRefresh->Visible = true;
+					this->iconSystemTray->Icon = defaultOfflineIcon;
+					this->lbStatus->Text = "Could not connect to headset.";
+					this->btnRefresh->Visible = true;
+					lowBatteryPopupShown = false;
+				}
 			}
-		}
-		else 
+			else 
 		{
 			this->iconSystemTray->Text = NO_DEVICE_STRING;
 			//use loaded offline icon
-			this->iconSystemTray->Icon = defaultOfflineIcon;
-			this->lbStatus->Text = "No headset device detected.";
-			this->btnRefresh->Visible = true;
-		}
+				this->iconSystemTray->Icon = defaultOfflineIcon;
+				this->lbStatus->Text = "No headset device detected.";
+				this->btnRefresh->Visible = true;
+				lowBatteryPopupShown = false;
+			}
 
 		if (timerRefresh->Enabled == false) 
 		{
@@ -455,10 +487,22 @@ namespace Cloud2BatteryMonitorUI {
 				hIcon = RefreshTrayNumber(batteryLevel, settingsHelper);
 			}
 
-			//apply icon
-			this->iconSystemTray->Icon = System::Drawing::Icon::FromHandle(hIcon);
+			//dispose of the previous generated tray icon before creating a new one
+			if (currentTrayGeneratedIcon != nullptr)
+			{
+				delete currentTrayGeneratedIcon;
+				currentTrayGeneratedIcon = nullptr;
+			}
 
-			//destroy the unmanaged handle!
+			//create a temporary wrapper from the unmanaged handle,
+			//clone it so the tray owns a safe managed copy,
+			//then destroy the original unmanaged handle
+			System::Drawing::Icon^ tempIcon = System::Drawing::Icon::FromHandle(hIcon);
+			currentTrayGeneratedIcon = safe_cast<System::Drawing::Icon^>(tempIcon->Clone());
+
+			this->iconSystemTray->Icon = currentTrayGeneratedIcon;
+
+			delete tempIcon;
 			DestroyIcon(hIcon);
 
 			trayText += BATTERY_LEVEL_STRING + batteryLevel + "%";
@@ -467,6 +511,13 @@ namespace Cloud2BatteryMonitorUI {
 		else
 		{
 			trayText += BATTERY_LEVEL_STRING + "N/A";
+
+			//dispose of the previous generated tray icon when switching to offline icon
+			if (currentTrayGeneratedIcon != nullptr)
+			{
+				delete currentTrayGeneratedIcon;
+				currentTrayGeneratedIcon = nullptr;
+			}
 
 			//use loaded offline icon
 			this->iconSystemTray->Icon = defaultOfflineIcon;

@@ -153,3 +153,45 @@ void SettingsHelper::setBatIcon(bool useBatIcon)
         batNode.text().set(useBatIcon);
     }
 }
+
+bool SettingsHelper::getLowBatteryPopupEnabled()
+{
+    return settingsNode.find_child_by_attribute(XML_ELEM_SETTING, XML_ATTR_NAME, "lowBatteryPopupEnabled").text().as_bool();
+}
+
+void SettingsHelper::setLowBatteryPopupEnabled(bool enabled)
+{
+    pugi::xml_node popupNode = settingsNode.find_child_by_attribute(XML_ELEM_SETTING, XML_ATTR_NAME, "lowBatteryPopupEnabled");
+    if (!popupNode)
+    {
+        pugi::xml_node newNode = settingsNode.append_child("setting");
+        pugi::xml_attribute attribute = newNode.append_attribute("name");
+        attribute.set_value("lowBatteryPopupEnabled");
+        newNode.text().set(enabled);
+    }
+    else
+    {
+        popupNode.text().set(enabled);
+    }
+}
+
+int SettingsHelper::getLowBatteryPopupLevel()
+{
+    return settingsNode.find_child_by_attribute(XML_ELEM_SETTING, XML_ATTR_NAME, "lowBatteryPopupLevel").text().as_int();
+}
+
+void SettingsHelper::setLowBatteryPopupLevel(int level)
+{
+    pugi::xml_node levelNode = settingsNode.find_child_by_attribute(XML_ELEM_SETTING, XML_ATTR_NAME, "lowBatteryPopupLevel");
+    if (!levelNode)
+    {
+        pugi::xml_node newNode = settingsNode.append_child("setting");
+        pugi::xml_attribute attribute = newNode.append_attribute("name");
+        attribute.set_value("lowBatteryPopupLevel");
+        newNode.text().set(level);
+    }
+    else
+    {
+        levelNode.text().set(level);
+    }
+}
