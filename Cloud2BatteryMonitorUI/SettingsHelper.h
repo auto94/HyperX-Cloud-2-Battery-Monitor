@@ -38,5 +38,9 @@ public:
     void setAutostart(bool);
     bool getBatIcon();
     void setBatIcon(bool);
+    bool getLowBatteryPopupEnabled();
+    void setLowBatteryPopupEnabled(bool);
+    int getLowBatteryPopupLevel();
+    void setLowBatteryPopupLevel(int);
 
 };

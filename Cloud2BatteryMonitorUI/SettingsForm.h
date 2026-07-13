@@ -52,6 +52,8 @@ namespace Cloud2BatteryMonitorUI {
 	private: System::Windows::Forms::Label^ lbRefresh;
 	private: System::Windows::Forms::NumericUpDown^ numRefreshMinutes;
 	private: System::Windows::Forms::CheckBox^ cbBatIcon;
+	private: System::Windows::Forms::CheckBox^ cbLowBatteryPopup;
+	private: System::Windows::Forms::NumericUpDown^ numLowBatteryPopup;
 
 	private:
 		/// <summary>
@@ -81,10 +83,13 @@ namespace Cloud2BatteryMonitorUI {
 			this->lbBackground = (gcnew System::Windows::Forms::Label());
 			this->lbText = (gcnew System::Windows::Forms::Label());
 			this->lbRefresh = (gcnew System::Windows::Forms::Label());
-			this->numRefreshMinutes = (gcnew System::Windows::Forms::NumericUpDown());
-			this->cbBatIcon = (gcnew System::Windows::Forms::CheckBox());
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numRefreshMinutes))->BeginInit();
-			this->SuspendLayout();
+				this->numRefreshMinutes = (gcnew System::Windows::Forms::NumericUpDown());
+				this->cbBatIcon = (gcnew System::Windows::Forms::CheckBox());
+				this->cbLowBatteryPopup = (gcnew System::Windows::Forms::CheckBox());
+				this->numLowBatteryPopup = (gcnew System::Windows::Forms::NumericUpDown());
+				(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numRefreshMinutes))->BeginInit();
+				(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numLowBatteryPopup))->BeginInit();
+				this->SuspendLayout();
 			// 
 			// lbSettingsHigh
 			// 
@@ -261,15 +266,39 @@ namespace Cloud2BatteryMonitorUI {
 			this->cbBatIcon->TabIndex = 21;
 			this->cbBatIcon->Text = L"Use battery as icon.";
 			this->cbBatIcon->UseVisualStyleBackColor = true;
-			this->cbBatIcon->CheckStateChanged += gcnew System::EventHandler(this, &SettingsForm::CBBatIcon_CheckChange);
-			// 
-			// SettingsForm
-			// 
+				this->cbBatIcon->CheckStateChanged += gcnew System::EventHandler(this, &SettingsForm::CBBatIcon_CheckChange);
+				// 
+				// cbLowBatteryPopup
+				// 
+				this->cbLowBatteryPopup->AutoSize = true;
+				this->cbLowBatteryPopup->Location = System::Drawing::Point(165, 150);
+				this->cbLowBatteryPopup->Name = L"cbLowBatteryPopup";
+				this->cbLowBatteryPopup->Size = System::Drawing::Size(107, 17);
+				this->cbLowBatteryPopup->TabIndex = 22;
+				this->cbLowBatteryPopup->Text = L"Low battery popup";
+				this->cbLowBatteryPopup->UseVisualStyleBackColor = true;
+				// 
+				// numLowBatteryPopup
+				// 
+				this->numLowBatteryPopup->BackColor = System::Drawing::Color::LightGray;
+				this->numLowBatteryPopup->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+				this->numLowBatteryPopup->Location = System::Drawing::Point(278, 149);
+				this->numLowBatteryPopup->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 99, 0, 0, 0 });
+				this->numLowBatteryPopup->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
+				this->numLowBatteryPopup->Name = L"numLowBatteryPopup";
+				this->numLowBatteryPopup->Size = System::Drawing::Size(32, 20);
+				this->numLowBatteryPopup->TabIndex = 23;
+				this->numLowBatteryPopup->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 20, 0, 0, 0 });
+				// 
+				// SettingsForm
+				// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::Color::Silver;
-			this->ClientSize = System::Drawing::Size(316, 209);
-			this->Controls->Add(this->cbBatIcon);
+				this->ClientSize = System::Drawing::Size(316, 209);
+				this->Controls->Add(this->numLowBatteryPopup);
+				this->Controls->Add(this->cbLowBatteryPopup);
+				this->Controls->Add(this->cbBatIcon);
 			this->Controls->Add(this->numRefreshMinutes);
 			this->Controls->Add(this->lbRefresh);
 			this->Controls->Add(this->lbText);
@@ -291,10 +320,11 @@ namespace Cloud2BatteryMonitorUI {
 			this->MinimumSize = System::Drawing::Size(332, 248);
 			this->Name = L"SettingsForm";
 			this->Text = L"Settings";
-			this->Load += gcnew System::EventHandler(this, &SettingsForm::SettingsForm_Load);
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numRefreshMinutes))->EndInit();
-			this->ResumeLayout(false);
-			this->PerformLayout();
+				this->Load += gcnew System::EventHandler(this, &SettingsForm::SettingsForm_Load);
+				(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numRefreshMinutes))->EndInit();
+				(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numLowBatteryPopup))->EndInit();
+				this->ResumeLayout(false);
+				this->PerformLayout();
 
 		}
 #pragma endregion
@@ -315,8 +345,15 @@ namespace Cloud2BatteryMonitorUI {
 		this->btnMedText->BackColor = settingsHelper->getColorMedText();
 		this->btnLow->BackColor = settingsHelper->getColorLow();
 		this->btnLowText->BackColor = settingsHelper->getColorLowText();
-		this->cbStart->Checked = settingsHelper->getAutostart();
-		this->cbBatIcon->Checked = settingsHelper->getBatIcon();
+			this->cbStart->Checked = settingsHelper->getAutostart();
+			this->cbBatIcon->Checked = settingsHelper->getBatIcon();
+			this->cbLowBatteryPopup->Checked = settingsHelper->getLowBatteryPopupEnabled();
+			int lowBatteryLevel = settingsHelper->getLowBatteryPopupLevel();
+			if (lowBatteryLevel < 1 || lowBatteryLevel > 99)
+			{
+				lowBatteryLevel = 20;
+			}
+			this->numLowBatteryPopup->Value = lowBatteryLevel;
 
 		if (cbBatIcon->Checked)
 		{
@@ -367,8 +404,10 @@ namespace Cloud2BatteryMonitorUI {
 		settingsHelper->setColorMedText(this->btnMedText->BackColor);
 		settingsHelper->setColorLow(this->btnLow->BackColor);
 		settingsHelper->setColorLowText(this->btnLowText->BackColor);
-		settingsHelper->setAutostart(this->cbStart->Checked);
-		settingsHelper->setBatIcon(this->cbBatIcon->Checked);
+			settingsHelper->setAutostart(this->cbStart->Checked);
+			settingsHelper->setBatIcon(this->cbBatIcon->Checked);
+			settingsHelper->setLowBatteryPopupEnabled(this->cbLowBatteryPopup->Checked);
+			settingsHelper->setLowBatteryPopupLevel((int)this->numLowBatteryPopup->Value);
 
 		settingsHelper->saveSettings();
 
