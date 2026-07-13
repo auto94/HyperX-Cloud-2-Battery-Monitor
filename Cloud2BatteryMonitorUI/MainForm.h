@@ -37,11 +37,11 @@ namespace Cloud2BatteryMonitorUI {
 	/// <summary>
 	/// Summary for MainForm
 	/// </summary>
-		public ref class MainForm : public System::Windows::Forms::Form
-		{
-		public:
-			System::Windows::Forms::Timer^ timerRefresh = gcnew System::Windows::Forms::Timer();
-			bool lowBatteryPopupShown = false;
+	public ref class MainForm : public System::Windows::Forms::Form
+	{
+	public:
+		System::Windows::Forms::Timer^ timerRefresh = gcnew System::Windows::Forms::Timer();
+		bool lowBatteryPopupShown = false;
 
 		//a variable to hold offline icon permanently
 		System::Drawing::Icon^ defaultOfflineIcon;
@@ -335,31 +335,31 @@ namespace Cloud2BatteryMonitorUI {
 		{
 			hid_device* headsetDevice = hid_open_path(devicePath.c_str());
 
-				if (headsetDevice != NULL) 
+			if (headsetDevice != NULL) 
+			{
+				int batteryLevel = getBatteryLevel(headsetDevice);
+				SettingsHelper* settingsHelper = new SettingsHelper();
+
+				if (settingsHelper->getLowBatteryPopupEnabled() &&
+					batteryLevel > 0 &&
+					batteryLevel <= settingsHelper->getLowBatteryPopupLevel())
 				{
-					int batteryLevel = getBatteryLevel(headsetDevice);
-					SettingsHelper* settingsHelper = new SettingsHelper();
-
-					if (settingsHelper->getLowBatteryPopupEnabled() &&
-						batteryLevel > 0 &&
-						batteryLevel <= settingsHelper->getLowBatteryPopupLevel())
+					if (!lowBatteryPopupShown)
 					{
-						if (!lowBatteryPopupShown)
-						{
-							this->iconSystemTray->BalloonTipTitle = "Battery monitor";
-							this->iconSystemTray->BalloonTipText = "Battery level low: " + batteryLevel + "%";
-							this->iconSystemTray->ShowBalloonTip(5000);
-							lowBatteryPopupShown = true;
-						}
+						this->iconSystemTray->BalloonTipTitle = "Battery monitor";
+						this->iconSystemTray->BalloonTipText = "Battery level low: " + batteryLevel + "%";
+						this->iconSystemTray->ShowBalloonTip(5000);
+						lowBatteryPopupShown = true;
 					}
-					else
-					{
-						lowBatteryPopupShown = false;
-					}
+				}
+				else
+				{
+					lowBatteryPopupShown = false;
+				}
 
-					// If the app is minized, only refresh the icon.
-					if (this->WindowState != FormWindowState::Minimized) 
-					{
+				// If the app is minized, only refresh the icon.
+				if (this->WindowState != FormWindowState::Minimized) 
+				{
 					wchar_t manufacturer[20];
 					hid_get_manufacturer_string(headsetDevice, manufacturer, 20);
 					wchar_t productName[50];
@@ -391,34 +391,33 @@ namespace Cloud2BatteryMonitorUI {
 				wchar_t productName[50];
 				hid_get_product_string(headsetDevice, productName, 50);
 
-					System::String^ batStr2 = gcnew System::String(to_string(batteryLevel).c_str());
-					System::String^ prodStr = gcnew System::String(productName);
-					RefreshTrayIcon(batStr2, prodStr);
-					delete settingsHelper;
-					
-					//close the connection only if it was opened.
-					hid_close(headsetDevice);
+				System::String^ batStr2 = gcnew System::String(to_string(batteryLevel).c_str());
+				System::String^ prodStr = gcnew System::String(productName);
+				RefreshTrayIcon(batStr2, prodStr);
+				delete settingsHelper;
+				//close the connection only if it was opened.
+				hid_close(headsetDevice);
 
 			}
 			else 
 			{
 				this->iconSystemTray->Text = NO_DEVICE_STRING;
 				//use loaded offline icon
-					this->iconSystemTray->Icon = defaultOfflineIcon;
-					this->lbStatus->Text = "Could not connect to headset.";
-					this->btnRefresh->Visible = true;
-					lowBatteryPopupShown = false;
-				}
-			}
-			else 
-		{
-			this->iconSystemTray->Text = NO_DEVICE_STRING;
-			//use loaded offline icon
 				this->iconSystemTray->Icon = defaultOfflineIcon;
-				this->lbStatus->Text = "No headset device detected.";
+				this->lbStatus->Text = "Could not connect to headset.";
 				this->btnRefresh->Visible = true;
 				lowBatteryPopupShown = false;
 			}
+		}
+		else 
+		{
+			this->iconSystemTray->Text = NO_DEVICE_STRING;
+			//use loaded offline icon
+			this->iconSystemTray->Icon = defaultOfflineIcon;
+			this->lbStatus->Text = "No headset device detected.";
+			this->btnRefresh->Visible = true;
+			lowBatteryPopupShown = false;
+		}
 
 		if (timerRefresh->Enabled == false) 
 		{
