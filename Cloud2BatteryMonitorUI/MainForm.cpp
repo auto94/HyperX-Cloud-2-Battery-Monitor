@@ -45,7 +45,8 @@ std::string getHeadsetDevicePath()
 					wcsstr(current->product_string, L"Cloud II Core") != 0 ||
 					wcsstr(current->product_string, L"Cloud Alpha Wireless") != 0 ||
 					wcsstr(current->product_string, L"Cloud III S Wireless") != 0 ||
-					wcsstr(current->product_string, L"Cloud III Wireless") != 0))
+					wcsstr(current->product_string, L"Cloud III Wireless") != 0 ||
+					wcsstr(current->product_string, L"Cloud Jet") != 0))
 			{
 				foundVID = current->vendor_id;
 				foundPID = current->product_id;
@@ -185,6 +186,17 @@ int getBatteryLevel(hid_device* headsetDevice)
 			writeBuffer[1] = 0x89;
 
 			batteryByteInt = 4;
+		}
+		else if (wcsstr(productName, L"Cloud Jet") != 0) {
+			// HP Cloud Jet data
+			writeBuffer[0] = 0x06;
+			writeBuffer[1] = 0xF0;
+			writeBuffer[2] = 0x09;
+			writeBuffer[3] = 0x00;
+			writeBuffer[4] = 0x00;
+			writeBuffer[5] = 0x00;
+
+			batteryByteInt = 3;
 		}
 	}
 	else 
